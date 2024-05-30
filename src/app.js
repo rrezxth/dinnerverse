@@ -19,9 +19,10 @@ app.use(express.urlencoded({ extended: false }));
 app.engine(".hbs", exphbs.engine({
     extname: ".hbs",
     defaultLayout: false,
-    layoutsDir: path.join(__dirname, "../views")
+    layoutsDir: path.join(__dirname, "../views/layouts"),
+    partialsDir: path.join(__dirname, "../views/partials")
 }));app.set('view engine', '.hbs');
-app.set('views', '../views');
+app.set('views', path.join(__dirname, '../views'));
 
 // ==============================
 // PORT CONNECTION -- MONGODB HERE
