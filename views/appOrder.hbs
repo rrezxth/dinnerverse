@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Page</title>
+    <div class="container-center">
+        <div class="logo">
+            <!-- // TODO: Should be restaurant logo, not hard-coded-->
+            <img src="/image/logo/hakka_legend_logo.PNG" alt="Restaurant Logo">
+        </div>
+    </div>
+    <div class="container">
+        <form action="/searchFood" method="post">
+            <div class="row search-panel">
+                <div class="col-md-5 offset-md-3 mt-1">
+                    <input value="{{searchKey}}" placeholder="Search food (NOT IMPLEMENTED YET)"
+                           class="form-control" type="text" name="foodSearch" id="">
+                </div>
+                <div class="col-md-1 text-center mt-1">
+                    <button type="submit" class="white-btn2">Search</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</head>
+
+<body>
+{{>navbar}}
+
+<section class="container-fluid" style="padding-top: 80px;">
+
+    <div class="container">
+        <div class="row my-2">
+            {{#each foods}}
+                <div class="col-md-4 my-5">
+                    <div class="card ">
+                        <img style="height:210px" src="/image/food_photos/{{this.photo}}" class="img-fluid mb-2" alt="">
+                        <h4>{{this.dname}}</h4>
+                        <h2 class="primary-color mb-3">
+                            <i class="fa fa-usd"></i>{{this.dprice}}</del></h2>
+                        <div>
+                            <button onclick="addFoodToBasket('{{this._id}}','{{this.dname}}','{{this.dprice}}','{{this.photo}}' )" class="main-btn">Add To Cart</button>
+                        </div>
+                    </div>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
+
+
+</body>
+
+</html>
