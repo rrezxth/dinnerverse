@@ -1,8 +1,8 @@
 # Environment variables
 .env
 /src/test.js
-/image/foodUploads
-/image/logo
+/public/image/foodUploads
+/public/image/logo
 
 
 # Dependency directory
