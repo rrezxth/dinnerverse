@@ -1,5 +1,7 @@
 # Environment variables
 .env
+/src/test.js
+
 
 # Dependency directory
 node_modules/
