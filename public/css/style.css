@@ -290,3 +290,24 @@ p{
 .states-btn{
     width: 100%;
 }
+
+
+/*
+=================================
+=================================
+ */
+
+.logo img {
+    width: 180px;
+    height: 150px;
+    margin-top: 150px;
+}
+
+.container-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 0; /* Remove any margin at the bottom */
+    padding-bottom: 0;
+}
