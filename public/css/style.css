@@ -308,6 +308,6 @@ p{
     justify-content: center;
     align-items: center;
     text-align: center;
-    margin-bottom: 0; /* Remove any margin at the bottom */
+    margin-bottom: 0;
     padding-bottom: 0;
 }

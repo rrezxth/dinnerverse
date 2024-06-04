@@ -8,7 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"
         integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA=="
         crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
-<script src="/static/js/script.js" defer></script>
+<script src="/js/script.js" defer></script>
 
 <nav class="navbar navbar-expand-lg bg-light fixed-top">
     <div class="container">
@@ -57,18 +57,22 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel"><img style="width:70px;height:40px" src="/static/image/logo.png" alt=""> Your Food Basket.</h5>
+                <h5 class="modal-title" id="staticBackdropLabel"><img style="width:70px;height:40px" src=/image/dv_logo.png" alt=""> Your Food Basket.</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body cart-body">
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary checkout-btn" id="orderNowButton">ORDER NOW</button>
+                <!--
                 {{#if loginUser}}
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <a href="/user/orderFood" type="button" class="btn btn-primary checkout-btn">Check out food</a>
                 {{else}}
                     <small class="primary-color">please login for check out food</small>
                 {{/if}}
+                -->
             </div>
         </div>
     </div>
