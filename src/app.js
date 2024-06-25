@@ -43,6 +43,11 @@ app.get("/order", (req, res) => {
     res.render('appOrder');
 });
 */
+
+app.get("/login", (req, res) => {
+    res.render('loginPage');
+});
+
 app.get("/order", (req, res) => {
 
     // TODO: Should be from database (using mongoose)
