@@ -48,6 +48,10 @@ app.get("/login", (req, res) => {
     res.render('loginPage');
 });
 
+app.get("/register", (req, res) => {
+    res.render('registerPage.hbs');
+});
+
 app.get("/order", (req, res) => {
 
     // TODO: Should be from database (using mongoose)
