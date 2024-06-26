@@ -18,11 +18,28 @@ const userSchema = new Schema({
         required: true,
         trim: true,
     },
+    address: {
+        type: String,
+        required: true,
+        trim: true,
+    },
     phoneNumber: {
         type: String,
         required: true,
         trim: true,
     },
+    username: {         // restaurants ONLY
+        type: String,
+        unique: true,
+        lowercase: true,
+        trim: true,
+    },
+    role: {
+        type: String,
+        enum: ['customer', 'restaurant'],
+        required: true,
+    },
+
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);
