@@ -12,7 +12,7 @@
 
 <nav class="navbar navbar-expand-lg bg-light fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="#"><img src="/image/dv_logo.png" style="height:120px;width:130px" alt=""></a>
+        <a class="navbar-brand" ><img src="/image/dv_logo.png" style="height:120px;width:130px" alt=""></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -26,9 +26,9 @@
                     <a class="nav-link" href="#counter">About us</a>
                 </li>
 
-                {{#if loginUser}}
+                {{#if user}}
                     <li class="nav-item">
-                        <a class="nav-link" href="/dashboard">{{loginUser.name}}</a>
+                        <a class="nav-link" href="/">{{user.name}}</a>
                     </li>
                 {{else}}
                     <li class="nav-item">
