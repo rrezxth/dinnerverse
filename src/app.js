@@ -131,6 +131,29 @@ app.get('/register', (req, res) => {
     res.render('registerPage.hbs');
 });
 
+app.post('/register', async(req, res) => {
+    const { name, email, password, address, phone } = req.body;
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({
+            email: email,
+            username: email,
+            password: hashedPassword,
+            name: name,
+            address: address,
+            phoneNumber: phone,
+            role: 'customer' });
+        await newUser.save();
+        res.status(200).json({ message: 'Registration successful!' });
+    } catch (err) {
+        if (err.code === 11000) { // Duplicate key error code
+            res.status(400).json({ error: 'Email already registered.' });
+        } else {
+            res.status(500).json({ error: 'Error registering user.' });
+        }
+    }
+});
+
 app.get('/order', (req, res) => {
 
     // TODO: Should be from database (using mongoose)
