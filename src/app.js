@@ -118,6 +118,15 @@ app.post('/login', async (req, res) => {
     }
 });
 
+app.get('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            return res.status(500).send({ error: 'Error logging out' });
+        }
+        res.redirect('/');
+    });
+});
+
 app.get('/register', (req, res) => {
     res.render('registerPage.hbs');
 });
