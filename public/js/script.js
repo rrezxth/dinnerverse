@@ -1,3 +1,5 @@
+import Swal from 'sweetalert2';
+
 console.log("/script/.js is active");
 
 // DEVELOPMENT ONLY
