@@ -2,11 +2,11 @@
 
 ### Database Connection
 1. Restaurant
-2. User
+2. **[COMPLETE]** User
 3. Order Details
 
 ### Core Functions
-1. Login Page | User and Restaurant
+1. **[COMPLETE]** Login Page | User and Restaurant
 2. Basic authentication to navigated pages
 
 ### Restaurant Functions
