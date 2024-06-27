@@ -11,7 +11,7 @@
 <body>
 {{>navbar}}
 <section class="container-fluid">
-    <div class="register-banner ">
+    <div class="register-banner">
         <div class="container">
             <div class="row mb-5 pb-5">
                 <div class="col-md-4 mt-5 mb-5">
@@ -19,12 +19,11 @@
                         <div class="text-center">
                             <h2 class="primary-color">User Login</h2>
                         </div>
-                        <form class="form" action="/login" method="post">
+                        <form id="login-form" class="form" action="/login" method="post">
                             <div class="mx-2">
-                                <input type="text"  class="form-control mt-3" name="identifier" id="" placeholder="Enter email / username">
-                                <input  type="password"  class="form-control mt-3" name="password" id="" placeholder="Enter password">
+                                <input type="text" class="form-control mt-3" name="identifier" placeholder="Enter email / username" required>
+                                <input type="password" class="form-control mt-3" name="password" placeholder="Enter password" required>
                             </div>
-
                             <div class="text-right">
                                 <button type="submit" class="main-btn mt-3 mx-4 mb-1">Login</button>
                             </div>
@@ -36,45 +35,50 @@
     </div>
 </section>
 
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('login-form');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Welcome!',
+                        text: result.message
+                    });
+                    window.location.href = '/'; // Redirect to homepage
+                } else {
+                    await Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: result.error
+                    });
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred. Please try again.'
+                });
+            }
+        });
+    });
+</script>
 </body>
 
 </html>
-{{#if invalid}}
-    <script>
-        Swal.fire({
-            title: 'Something is wrong!',
-            text: 'Invalid email or password. Try again.',
-            icon: 'error',
-            confirmButtonText: 'Ok!'
-        })
-    </script>
-{{/if}}
-{{#if logout}}
-    <script>
-        Swal.fire({
-            title: 'You have successfully logged out.',
-            icon: 'success',
-            confirmButtonText: 'Ok!'
-        })
-    </script>
-{{/if}}
-{{#if loginFirst}}
-    <script>
-        Swal.fire({
-            title: 'Please Login First!',
-            text:'You need to login to access this page.',
-            icon: 'info',
-            confirmButtonText: 'Ok!'
-        })
-    </script>
-{{/if}}
-{{#if newRegister}}
-    <script>
-        Swal.fire({
-            title: 'Register success full!',
-            text:'Please login using your account credentials.',
-            icon: 'success',
-            confirmButtonText: 'Ok!'
-        })
-    </script>
-{{/if}}
