@@ -44,7 +44,7 @@ function addFoodToBasket(did, dname, dprice, dimage) {
 function displayNotification(message) {
     Swal.fire({
         toast: true,
-        background: "#A82c48",
+        background: "#99cc33",
         html: `<h6 class='text-light text-small px-1'>${message}</h6>`,
         position: "bottom",
         showConfirmButton: false,
