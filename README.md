@@ -3,22 +3,22 @@
 ### Database Connection
 1. Restaurant
 2. **[COMPLETE]** User
-3. Order Details
+3. [UP NEXT] Order Details
 
 ### Core Functions
 1. **[COMPLETE]** Login Page | User and Restaurant
-2. Basic authentication to navigated pages
+2. [ONGOING] Basic authentication to navigated pages
 
-### Restaurant Functions
+### USER: Restaurant Functions
 1. Add item/dishes
 2. Setup restaurant layout
 3. *[OPTIONAL]* Accept/Deny order
 4. *[OPTIONAL]* Accept/Deny reservation
 5. *[OPTIONAL]* Edit Profile/Account
 
-### User Functions
+### USER: Customer Functions
 1. **[COMPLETE]** Create order
-2. View Current/Past Orders
+2. [UP NEXT] View Current/Past Orders
 3. *[OPTIONAL]* Create a restaurant reservation (using restaurant layout)
 4. *[OPTIONAL]* Edit Profile/Account
 
