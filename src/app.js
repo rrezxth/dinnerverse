@@ -89,7 +89,7 @@ app.post('/login', async (req, res) => {
         if (!user) {
             user = await User.findOne({ username: identifier });
             if (!user) {
-                return res.status(400).send({ error: 'Invalid credentials 1' });
+                return res.status(400).send({ error: 'Invalid credentials' });
             }
         } else {
             console.log('USER FOUND');
@@ -97,7 +97,7 @@ app.post('/login', async (req, res) => {
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(400).send({ error: 'Invalid credentials 2' });
+            return res.status(400).send({ error: 'Invalid credentials' });
         }
 
         console.log('Credentials CORRECT!');
@@ -112,9 +112,9 @@ app.post('/login', async (req, res) => {
             role: user.role,
         };
 
-        res.redirect('/');
+        res.status(200).json({ message: 'Login successful!' });
     } catch (err) {
-        res.status(400).send({ error: 'Error logging in' });
+        res.status(500).json({ error: 'Error logging in' });
     }
 });
 
@@ -123,8 +123,12 @@ app.get('/logout', (req, res) => {
         if (err) {
             return res.status(500).send({ error: 'Error logging out' });
         }
-        res.redirect('/');
+        res.redirect('/logout-success');
     });
+});
+
+app.get('/logout-success', (req, res) => {
+    res.render('logoutPage');
 });
 
 app.get('/register', (req, res) => {

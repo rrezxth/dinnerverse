@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout Success</title>
+
+</head>
+
+<body>
+{{>navbar}}
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Logged Out',
+            text: 'You have been successfully logged out.',
+            timer: 3000,
+            showConfirmButton: false
+        }).then(() => {
+            window.location.href = '/'; // Redirect to homepage after alert
+        });
+    });
+</script>
+</body>
+
+</html>
