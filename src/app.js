@@ -14,8 +14,8 @@ const bcrypt = require('bcrypt');
 //const cookieParser = require('cookie-parser');
 
 
-//// IMPORT from directory
-require('dotenv').config({ path: '../.env' });
+//// IMPORT from directory  
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const {connectToMongo} = require("./database/dbconfig");
 const User = require('./database/model/userModel');
 
