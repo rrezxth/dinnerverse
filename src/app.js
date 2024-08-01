@@ -63,6 +63,17 @@ app.use((req, res, next) => {
     next();
 });
 
+// Basic authentication
+function isAuthenticated(req, res, next) {
+    if (req.session.user) {
+        // User is authenticated
+        return next();
+    } else {
+        // Unauthorized
+        return res.redirect('/login'); // Adjust the login route as necessary
+    }
+}
+
 // ==============================
 // PORT CONNECTION -- MONGODB HERE
 // ==============================
@@ -101,16 +112,14 @@ app.get('/register', (req, res) => {
 });
 
 // USER PROFILE Page
-app.get('/user/profile', (req, res) => {
+app.get('/user/profile', isAuthenticated, (req, res) => {
     res.render('userProfile.hbs');
 });
 
 // USER RECENT ORDERS Page
-app.get('/user/retrieve-orders/:userId', async (req, res) => {
-    const userId = req.params.userId;
-
+app.get('/user/retrieve-orders/', isAuthenticated, async (req, res) => {
     try {
-        const orders = await Order.find({ user_id: userId })
+        const orders = await Order.find({ user_id: req.session.user.id })
             .populate('restaurant_id', 'name')
             .populate('items.item_id', 'name')
             .lean();
@@ -147,13 +156,13 @@ app.get('/user/retrieve-orders/:userId', async (req, res) => {
 });
 
 // SELECT RESTAURANT Page
-app.get('/select-restaurant', async(req, res) => {
+app.get('/select-restaurant', isAuthenticated, async(req, res) => {
     const restaurants = await Restaurant.find();
     res.render('selectRestaurant', { restaurants });
 });
 
 // ORDER Page
-app.get('/create-order', async (req, res) => {
+app.get('/create-order', isAuthenticated,  async (req, res) => {
     const restaurantId = req.query.restaurantId;
 
     // TODO: DEBUGGING
@@ -256,7 +265,7 @@ app.post('/api/register', async(req, res) => {
     }
 });
 
-app.get('/api/available-restaurants', async (req, res) => {
+app.get('/api/available-restaurants', isAuthenticated, async (req, res) => {
     try {
         const restaurants = await Restaurant.find();
         res.json(restaurants);
@@ -265,7 +274,7 @@ app.get('/api/available-restaurants', async (req, res) => {
     }
 });
 
-app.post('/api/submit-order', async (req, res) => {
+app.post('/api/submit-order', isAuthenticated, async (req, res) => {
     try {
         const { user_id, restaurant_id, items, total_price, pickup_time } = req.body;
 
@@ -288,3 +297,4 @@ app.post('/api/submit-order', async (req, res) => {
         res.status(500).json({ error: 'Failed to create order' });
     }
 });
+
