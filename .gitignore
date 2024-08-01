@@ -1,9 +1,6 @@
 # Environment variables
 .env
 /src/test.js
-/public/image/foodUploads
-/public/image/logo
-
 
 # Dependency directory
 node_modules/
