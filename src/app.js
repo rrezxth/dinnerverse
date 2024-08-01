@@ -91,9 +91,14 @@ app.get('/user/profile', (req, res) => {
     res.render('userProfile.hbs');
 });
 
-// USER ORDER Page
+// USER RECENT ORDERS Page
 app.get('/user/orders', (req, res) => {
     res.render('userOrder.hbs');
+});
+
+// SELECT RESTAURANT Page
+app.get('/select-restaurant', async(req, res) => {
+    res.render('selectRestaurant.hbs');
 });
 
 // ORDER Page
