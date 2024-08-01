@@ -6,7 +6,7 @@ const app = express();
 const path = require('path');
 const exphbs = require('express-handlebars');
 const session = require('express-session');
-const bodyParser = require('body-parser');
+//const handlebars = require('./handlebar.js');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 
@@ -48,6 +48,11 @@ app.engine(".hbs", exphbs.engine({
     runtimeOptions: {
         allowProtoPropertiesByDefault: true,
         allowProtoMethodsByDefault: true
+    },
+    helpers: {
+        eq: function (v1, v2) {
+            return v1 === v2;
+        }
     }
 }));
 app.set('view engine', '.hbs');
@@ -230,7 +235,7 @@ app.post('/login', async (req, res) => {
     }
 });
 
-app.get('/logout', (req, res) => {
+app.get('/api/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) {
             return res.status(500).send({ error: 'Error logging out' });
@@ -240,7 +245,7 @@ app.get('/logout', (req, res) => {
 });
 
 
-app.post('/register', async(req, res) => {
+app.post('/api/register', async(req, res) => {
     const { name, email, password, address, phone } = req.body;
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -263,7 +268,7 @@ app.post('/register', async(req, res) => {
     }
 });
 
-app.get("/yourOrder", async (req, res) => {
+app.get("/api/yourOrder", async (req, res) => {
     const user = req.session.user;
 
     if (!user) {

@@ -46,9 +46,15 @@
                             {{user.name}}
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="/user/profile">My Profile</a></li>
-                            <li><a class="dropdown-item" href="/user/orders">Orders</a></li>
-                            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+
+                            {{#if (eq user.role 'customer')}}
+                                <li><a class="dropdown-item" href="/user/profile">My Profile</a></li>
+                                <li><a class="dropdown-item" href="/user/orders">Orders</a></li>
+                            {{else}}
+                                <li><a class="dropdown-item" href="/user/profile">Manage Restaurant</a></li>
+                            {{/if}}
+
+                            <li><a class="dropdown-item" href="/api/logout">Logout</a></li>
                         </ul>
                     </li>
                 {{else}}
@@ -83,14 +89,6 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary checkout-btn" id="orderNowButton">ORDER NOW</button>
-                <!--
-                {{#if loginUser}}
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <a href="/user/orderFood" type="button" class="btn btn-primary checkout-btn">Check out food</a>
-                {{else}}
-                    <small class="primary-color">please login for check out food</small>
-                {{/if}}
-                -->
             </div>
         </div>
     </div>

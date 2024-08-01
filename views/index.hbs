@@ -22,9 +22,11 @@
 
                         <div class="mt-4">
                             {{#if user}}
-                                <a href="/select-restaurant">
-                                    <button class="main-btn">Order now <i class="fas fa-shopping-basket ps-3"></i></button>
-                                </a>
+                                {{#if (eq user.role 'customer')}}
+                                    <a href="/select-restaurant">
+                                        <button class="main-btn">Order now <i class="fas fa-shopping-basket ps-3"></i></button>
+                                    </a>
+                                {{/if}}
                             {{else}}
                                 <a href="/login">
                                     <button class="main-btn">Order now <i class="fas fa-shopping-basket ps-3"></i></button>
