@@ -35,8 +35,8 @@ const orderSchema = new Schema({
     },
     status: {
         type: String,
-        enum: ['pending', 'confirmed', 'completed', 'canceled'],
-        default: 'pending',
+        enum: ['Cancelled', 'Preparing', 'Ready for Pickup', 'Complete'],
+        default: 'Preparing',
         required: true,
     },
     pickup_time: {
