@@ -1,9 +1,10 @@
 ## TODOs and Milestones
 
 ### Database Connection
-1. Restaurant
+1. **[COMPLETE]** Restaurant
 2. **[COMPLETE]** User
 3. **[COMPLETE]** Order Details
+4. **[COMPLETE]** Menu and Items
 
 ### Core Functions
 1. **[COMPLETE]** Login Page | User and Restaurant
