@@ -18,6 +18,7 @@ const bcrypt = require('bcrypt');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const {connectToMongo} = require("./database/dbconfig");
 const User = require('./database/model/userModel');
+const Order = require('./database/model/orderModel');
 
 // ==============================
 // MIDDLEWARES
@@ -65,99 +66,37 @@ connectToMongo()
 // ROUTE HANDLERS
 // ==============================
 
-// HOME
+// HOME Page
 app.get('/', (req, res) => {
     res.render('index');
 });
-/*
-app.get("/order", (req, res) => {
-    res.render('appOrder');
-});
-*/
 
+// LOGIN Page
 app.get('/login', (req, res) => {
     res.render('loginPage');
 });
 
-app.post('/login', async (req, res) => {
-    const { identifier, password } = req.body;
-    try {
-        // Find user first with their EMAIL
-        let user = await User.findOne({ email: identifier });
-
-        // NO USER -- find restaurant with their USER
-        if (!user) {
-            user = await User.findOne({ username: identifier });
-            if (!user) {
-                return res.status(400).send({ error: 'Invalid credentials' });
-            }
-        } else {
-            console.log('USER FOUND');
-        }
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).send({ error: 'Invalid credentials' });
-        }
-
-        console.log('Credentials CORRECT!');
-
-        req.session.user = {
-            id: user._id,
-            email: user.email,
-            username: user.username,
-            name: user.name,
-            address: user.address,
-            phoneNumber: user.phoneNumber,
-            role: user.role,
-        };
-
-        res.status(200).json({ message: 'Login successful!' });
-    } catch (err) {
-        res.status(500).json({ error: 'Error logging in' });
-    }
-});
-
-app.get('/logout', (req, res) => {
-    req.session.destroy(err => {
-        if (err) {
-            return res.status(500).send({ error: 'Error logging out' });
-        }
-        res.redirect('/logout-success');
-    });
-});
-
+// LOGOUT Page
 app.get('/logout-success', (req, res) => {
     res.render('logoutPage');
 });
 
+// REGISTER Page
 app.get('/register', (req, res) => {
     res.render('registerPage.hbs');
 });
 
-app.post('/register', async(req, res) => {
-    const { name, email, password, address, phone } = req.body;
-    try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({
-            email: email,
-            username: email,
-            password: hashedPassword,
-            name: name,
-            address: address,
-            phoneNumber: phone,
-            role: 'customer' });
-        await newUser.save();
-        res.status(200).json({ message: 'Registration successful!' });
-    } catch (err) {
-        if (err.code === 11000) { // Duplicate key error code
-            res.status(400).json({ error: 'Email already registered.' });
-        } else {
-            res.status(500).json({ error: 'Error registering user.' });
-        }
-    }
+// USER PROFILE Page
+app.get('/user/profile', (req, res) => {
+    res.render('userProfile.hbs');
 });
 
+// USER ORDER Page
+app.get('/user/orders', (req, res) => {
+    res.render('userOrder.hbs');
+});
+
+// ORDER Page
 app.get('/order', (req, res) => {
 
     // TODO: Should be from database (using mongoose)
@@ -201,4 +140,93 @@ app.get('/order', (req, res) => {
     ];
 
     res.render('appOrder', { foods: dummyFoods });
+});
+
+// ==============================
+// API CALLS
+// ==============================
+
+app.post('/login', async (req, res) => {
+    const { identifier, password } = req.body;
+    try {
+        // Find user first with their EMAIL
+        let user = await User.findOne({ email: identifier });
+
+        // NO USER -- find restaurant with their USER
+        if (!user) {
+            user = await User.findOne({ username: identifier });
+            if (!user) {
+                return res.status(400).send({ error: 'Invalid credentials' });
+            }
+        } else {
+            console.log('USER FOUND');
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).send({ error: 'Invalid credentials' });
+        }
+
+        req.session.user = {
+            id: user._id,
+            email: user.email,
+            username: user.username,
+            name: user.name,
+            address: user.address,
+            phoneNumber: user.phoneNumber,
+            role: user.role,
+        };
+
+        res.status(200).json({ message: 'Login successful!' });
+    } catch (err) {
+        res.status(500).json({ error: 'Error logging in' });
+    }
+});
+
+app.get('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            return res.status(500).send({ error: 'Error logging out' });
+        }
+        res.redirect('/logout-success');
+    });
+});
+
+
+app.post('/register', async(req, res) => {
+    const { name, email, password, address, phone } = req.body;
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = new User({
+            email: email,
+            username: email,
+            password: hashedPassword,
+            name: name,
+            address: address,
+            phoneNumber: phone,
+            role: 'customer' });
+        await newUser.save();
+        res.status(200).json({ message: 'Registration successful!' });
+    } catch (err) {
+        if (err.code === 11000) { // Duplicate key error code
+            res.status(400).json({ error: 'Email already registered.' });
+        } else {
+            res.status(500).json({ error: 'Error registering user.' });
+        }
+    }
+});
+
+app.get("/yourOrder", async (req, res) => {
+    const user = req.session.user;
+
+    if (!user) {
+        return res.status(401).json({ message: 'User not logged in' });
+    }
+
+    try {
+        const orders = await Order.find({ user_id: user.id });
+        res.json(orders);
+    } catch (error) {
+        res.status(500).json({ message: 'An error occurred', error });
+    }
 });

@@ -173,7 +173,6 @@ p{
     padding:11rem 0 6rem;
 }
 
-
 .counter-section{
     background-color: var(--primary-color);
     padding: 2.5rep 0;
@@ -271,19 +270,22 @@ p{
     color:var(--white-color)
 }
 
-
-.userNavBar{
-    margin: 4.8085rem 0rem;
-    background-color: var(--primary-color);
-    color:var(--white-color);
-
-
-
+.userSection {
+    margin-top: 3rem; /* Adjust this value if necessary to ensure proper spacing below the navbar */
 }
-.userNavBar a{
-    color:var(--white-color);
+
+.userNavBar {
+    margin: 9rem 0 0 0; /* Increase the top margin to ensure it is below the navbar */
+    background-color: var(--primary-color);
+    color: var(--white-color);
+    padding: 1rem 0; /* Add padding for better spacing */
+}
+.userNavBar a {
+    color: var(--white-color);
     margin: 0 1rem;
 }
+
+
 .navbar{
     padding: 0%;
 }
