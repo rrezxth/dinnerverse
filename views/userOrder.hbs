@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Orders</title>
+</head>
+
+<body>
+{{> navbar}}
+<section>
+    <div class="container-fluid pb-5">
+        {{> userbar}}
+
+        <!-- Orders -->
+        <div class="container mt-5">
+            <h2 class="mb-4">Your Orders</h2>
+            {{#each orders}}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <strong>Order ID:</strong> {{this._id}}
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Order Summary</h5>
+                        <p><strong>Restaurant Name:</strong> {{this.restaurant_id.name}}</p>
+                        <p><strong>Status:</strong> {{this.status}}</p>
+                        <p><strong>Pickup Time:</strong> {{this.pickup_time}}</p>
+                        <p><strong>Total Price:</strong> ${{this.total_price}}</p>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Item Name</th>
+                                    <th scope="col">Quantity</th>
+                                    <th scope="col">Price</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{#each this.items}}
+                                    <tr>
+                                        <td>{{this.item_id.name}}</td>
+                                        <td>{{this.quantity}}</td>
+                                        <td>${{this.price}}</td>
+                                    </tr>
+                                {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <small>Created At: {{this.createdAt}}</small>
+                    </div>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
+</body>
+
+</html>
