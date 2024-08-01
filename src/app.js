@@ -8,6 +8,7 @@ const exphbs = require('express-handlebars');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
+const mongoose = require('mongoose');
 
 //const jwt = require('jsonwebtoken');
 //const jwtSecret = process.env.JWT_SECRET;
@@ -18,7 +19,13 @@ const bcrypt = require('bcrypt');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const {connectToMongo} = require("./database/dbconfig");
 const User = require('./database/model/userModel');
+const Restaurant = require('./database/model/restaurantModel');
+const Menu = require('./database/model/menuModel');
+const Item = require('./database/model/itemModel');
 const Order = require('./database/model/orderModel');
+
+
+
 
 // ==============================
 // MIDDLEWARES
@@ -37,8 +44,13 @@ app.engine(".hbs", exphbs.engine({
     extname: ".hbs",
     defaultLayout: false,
     layoutsDir: path.join(__dirname, "../views/layouts"),
-    partialsDir: path.join(__dirname, "../views/partials")
-}));app.set('view engine', '.hbs');
+    partialsDir: path.join(__dirname, "../views/partials"),
+    runtimeOptions: {
+        allowProtoPropertiesByDefault: true,
+        allowProtoMethodsByDefault: true
+    }
+}));
+app.set('view engine', '.hbs');
 app.set('views', path.join(__dirname, '../views'));
 
 // ==============================
@@ -98,12 +110,41 @@ app.get('/user/orders', (req, res) => {
 
 // SELECT RESTAURANT Page
 app.get('/select-restaurant', async(req, res) => {
-    res.render('selectRestaurant.hbs');
+    const restaurants = await Restaurant.find();
+    res.render('selectRestaurant', { restaurants });
 });
 
 // ORDER Page
-app.get('/order', (req, res) => {
+app.get('/order', async (req, res) => {
+    const restaurantId = req.query.restaurantId;
+    console.log('Received restaurantId:', restaurantId);
 
+    try {
+        const restaurant = await Restaurant.findById(restaurantId);
+        if (!restaurant) {
+            console.error('Restaurant not found');
+            return res.status(404).send('Restaurant not found');
+        }
+
+        // Get menu
+        const objectId = new mongoose.Types.ObjectId(restaurantId);
+        const menu = await Menu.findOne({ restaurant_id: objectId }).populate('items');
+        if (!menu) {
+            console.error('Menu not found for restaurantId:', restaurantId);
+            return res.status(404).send('Menu not found');
+        }
+
+        // Log the items for debugging purposes
+        console.log('Menu items:', menu.items);
+
+        // Render order page with the selected restaurant and menu items
+        res.render('appOrder', { restaurant, items: menu.items });
+    } catch (err) {
+        console.error('Error loading order page:', err);
+        res.status(500).send('Error loading order page');
+    }
+
+    /*
     // TODO: Should be from database (using mongoose)
     const dummyFoods = [
         {
@@ -145,6 +186,7 @@ app.get('/order', (req, res) => {
     ];
 
     res.render('appOrder', { foods: dummyFoods });
+    */
 });
 
 // ==============================
@@ -233,5 +275,14 @@ app.get("/yourOrder", async (req, res) => {
         res.json(orders);
     } catch (error) {
         res.status(500).json({ message: 'An error occurred', error });
+    }
+});
+
+app.get('/api/available-restaurants', async (req, res) => {
+    try {
+        const restaurants = await Restaurant.find();
+        res.json(restaurants);
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching restaurants', error: err });
     }
 });

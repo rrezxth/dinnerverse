@@ -37,7 +37,7 @@ function addFoodToBasket(did, dname, dprice, dimage) {
     }
 
     localStorage.setItem("cart", JSON.stringify(products));
-    displayNotification("Item successfully added");
+    displayNotification("Item added successfully.");
     updateCart();
 }
 
@@ -79,7 +79,7 @@ function updateCart() {
         cart.forEach((item) => {
             table += `
                 <tr>
-                    <td><img style='width:50px;height:50px;border-radius:50%' src='/image/food_photos/${item.image}'/></td>
+                    <td><img style='width:50px;height:50px;border-radius:50%' src='/image${item.image}'/></td>
                     <td><small>${item.name}</small></td>
                     <td><small>${item.price}</small></td>
                     <td><small>${item.quantity}</small></td>
