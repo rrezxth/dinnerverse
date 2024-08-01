@@ -107,6 +107,76 @@ function removeBook(id) {
     updateCart();
 }
 
+/*
+=================================
+=================================
+ */
+
+async function handleOrderNowButtonClick(user_id, restaurant_id) {
+    // Close the modal
+    var modalElement = document.getElementById("staticBackdrop");
+    var modalInstance = bootstrap.Modal.getInstance(modalElement);
+    modalInstance.hide();
+
+    // Pickup time (40 minutes from now)
+    const currentTime = new Date();
+    const pickup_time = new Date(currentTime.getTime() + 40 * 60000);
+
+    // Get cart data
+    const cart = JSON.parse(localStorage.getItem("cart"));
+    const total_price = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    // Prepare order data
+    const orderData = {
+        user_id,
+        restaurant_id,
+        items: cart.map(item => ({
+            item_id: item.id,
+            quantity: item.quantity,
+            price: item.price
+        })),
+        total_price,
+        pickup_time
+    };
+
+    // DEBUG
+    console.log(orderData);
+
+    try {
+        const response = await fetch('/api/submit-order', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(orderData)
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            console.log('Order created successfully:', result);
+
+            resetCart();
+
+            // Show notif
+            Swal.fire({
+                toast: true,
+                background: "#03AC13",
+                html: "<h6 class='text-light text-small px-1'>Thank you for your order!</h6>",
+                position: "bottom",
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+            });
+        } else {
+            console.error('Failed to create order');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+
+/*
 function handleOrderNowButtonClick() {
     // Close the modal
     var modalElement = document.getElementById("staticBackdrop");
@@ -126,3 +196,4 @@ function handleOrderNowButtonClick() {
         timerProgressBar: true,
     });
 }
+*/

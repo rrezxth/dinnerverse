@@ -8,10 +8,11 @@
     <title>Order Page</title>
     <div class="container-center">
         <div class="logo">
-            <!-- // TODO: Should be restaurant logo, not hard-coded-->
             <img src="/image/restaurant_logos/{{restaurant.alias}}_logo.jpg" alt="Restaurant Logo">
         </div>
     </div>
+
+    <!-- TODO: Ignore for now -->
     <div class="container">
         <form action="/searchFood" method="post">
             <div class="row search-panel">
@@ -28,35 +29,36 @@
 </head>
 
 <body>
-{{>navbar}}
+    {{>navbar}}
+    <section class="container-fluid" style="padding-top: 80px;">
 
-<section class="container-fluid" style="padding-top: 80px;">
-
-    <div class="container">
-        <div class="row my-2">
-            {{#each items}}
-                <div class="col-md-4 my-5">
-                    <div class="card ">
-                        <img style="height:210px" src="/image/restaurant_photos/{{../restaurant.alias}}/{{this.alias}}.jpg" class="img-fluid mb-2" alt="">
-                        <h4>{{this.name}}</h4>
-                        <h2 class="primary-color mb-3">
-                            <i class="fa fa-usd"></i>{{this.price}}</del></h2>
-                        <div>
-                            <button onclick="addFoodToBasket('{{this._id}}','{{this.name}}','{{this.price}}','/restaurant_photos/{{../restaurant.alias}}/{{this.alias}}.jpg' )" class="main-btn">Add To Cart</button>
+        <div class="container">
+            <div class="row my-2">
+                {{#each items}}
+                    <div class="col-md-4 my-5">
+                        <div class="card ">
+                            <img style="height:210px" src="/image/restaurant_photos/{{../restaurant.alias}}/{{this.alias}}.jpg" class="img-fluid mb-2" alt="">
+                            <h4>{{this.name}}</h4>
+                            <h2 class="primary-color mb-3">
+                                <i class="fa fa-usd"></i>{{this.price}}</del></h2>
+                            <div>
+                                <button onclick="addFoodToBasket('{{this._id}}','{{this.name}}','{{this.price}}','/restaurant_photos/{{../restaurant.alias}}/{{this.alias}}.jpg' )" class="main-btn">Add To Cart</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            {{/each}}
+                {{/each}}
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         resetCart();
     });
 
-    document.getElementById("orderNowButton").addEventListener("click", handleOrderNowButtonClick);
+    document.getElementById("orderNowButton").addEventListener("click", function() {
+        handleOrderNowButtonClick('{{user.id}}', '{{restaurant._id}}');
+    });
 </script>
 
 </body>
