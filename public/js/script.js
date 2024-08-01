@@ -44,7 +44,7 @@ function addFoodToBasket(did, dname, dprice, dimage) {
 function displayNotification(message) {
     Swal.fire({
         toast: true,
-        background: "#99cc33",
+        background: "#ecb649",
         html: `<h6 class='text-light text-small px-1'>${message}</h6>`,
         position: "bottom",
         showConfirmButton: false,
@@ -57,7 +57,7 @@ function updateCart() {
     const cart = JSON.parse(localStorage.getItem("cart"));
     if (cart === null || cart.length === 0) {
         $(".cart-num").html("( 0 )");
-        $(".cart-body").html("Your cart is empty...");
+        $(".cart-body").html("Your cart is empty!");
         $(".order-btn").addClass("disabled");
     } else {
         $(".cart-num").html(`( ${cart.length} )`);
