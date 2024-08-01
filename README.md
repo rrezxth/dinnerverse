@@ -8,7 +8,7 @@
 
 ### Core Functions
 1. **[COMPLETE]** Login Page | User and Restaurant
-2. **[ONGOING]** Basic authentication to navigated pages
+2. **[COMPLETE]** Basic authentication to navigated pages
 
 ### USER: Restaurant Functions
 1. [NEXT UP] Add item/dishes
