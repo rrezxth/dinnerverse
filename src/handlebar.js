@@ -63,8 +63,6 @@ Handlebars.registerHelper('eq', function (v1, v2) {
     return v1 === v2;
 });
 
-
-
 const hbs = exphbs.create({
     extname: '.hbs',
     handlebars: Handlebars
