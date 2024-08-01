@@ -18,7 +18,7 @@
 
 ### USER: Customer Functions
 1. **[COMPLETE]** Create order
-2. [UP NEXT] View Current/Past Orders
+2. **[COMPLETE]** View Current/Past Orders
 3. *[OPTIONAL]* Create a restaurant reservation (using restaurant layout)
 4. *[OPTIONAL]* Edit Profile/Account
 
