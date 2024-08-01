@@ -70,7 +70,8 @@ function isAuthenticated(req, res, next) {
         return next();
     } else {
         // Unauthorized
-        return res.redirect('/login'); // Adjust the login route as necessary
+        req.session.unauthorizedMessage = 'You are unauthorized to access this page. Please LOGIN.';
+        return res.redirect('/login');
     }
 }
 
@@ -96,14 +97,23 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
+app.get('/clear-unauthorized-message', (req, res) => {
+    req.session.unauthorizedMessage = null;
+    res.sendStatus(200);
+});
+
+
 // LOGIN Page
 app.get('/login', (req, res) => {
-    res.render('loginPage');
+    const unauthorizedMessage = req.session.unauthorizedMessage;
+    req.session.unauthorizedMessage = null; // Clear the message after fetching it
+    res.render('loginPage.hbs', { unauthorizedMessage });
 });
+
 
 // LOGOUT Page
 app.get('/logout-success', (req, res) => {
-    res.render('logoutPage');
+    res.render('logoutPage.hbs');
 });
 
 // REGISTER Page

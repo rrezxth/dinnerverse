@@ -24,6 +24,7 @@
         integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous" defer>
 </script>
 
+
 <nav class="navbar navbar-expand-lg bg-light fixed-top">
     <div class="container">
         <a class="navbar-brand" ><img src="/image/web_photos/dv_logo.png" style="height:120px;width:130px" alt=""></a>
@@ -93,3 +94,22 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const unauthorizedMessage = '{{unauthorizedMessage}}';
+        if (unauthorizedMessage) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Unauthorized',
+                text: unauthorizedMessage,
+                showConfirmButton: true
+            }).then(() => {
+                // Clear the unauthorized message after displaying
+                fetch('/clear-unauthorized-message').then(() => {
+                    window.location.href = '/login';
+                });
+            });
+        }
+    });
+</script>
