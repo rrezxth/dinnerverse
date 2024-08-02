@@ -14,6 +14,7 @@
     <div class="container-fluid pb-5">
         {{> userbar}}
 
+        {{#if orders}}
         <!-- Orders -->
         <div class="container mt-5">
             <h2 class="mb-4">Your Orders</h2>
@@ -55,6 +56,12 @@
                 </div>
             {{/each}}
         </div>
+        {{else}}
+            <div class="container mt-5">
+                <h2 class="mb-4">No Order History</h2>
+            </div>
+        {{/if}}
+
     </div>
 </section>
 </body>
