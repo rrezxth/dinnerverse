@@ -132,6 +132,7 @@ app.get('/user/retrieve-orders/', isAuthenticated, async (req, res) => {
         const orders = await Order.find({ user_id: req.session.user.id })
             .populate('restaurant_id', 'name')
             .populate('items.item_id', 'name')
+            .sort({ createdAt: -1 })
             .lean();
 
         // Format the dates before rendering
