@@ -61,14 +61,18 @@
                         await Swal.fire({
                             icon: 'success',
                             title: 'Success',
-                            text: result.message
+                            text: 'You have registered successfully.',
+                            timer: 4000,
+                            timerProgressBar: true
                         });
                         window.location.href = '/login'; // Redirect to login page
                     } else {
                         await Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: result.error
+                            text: result.error,
+                            timer: 10000,
+                            timerProgressBar: true
                         });
                     }
                 } catch (err) {
@@ -76,7 +80,9 @@
                     await Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'An error occurred. Please try again.'
+                        text: 'An error occurred. Please try again.',
+                        timer: 10000,
+                        timerProgressBar: true
                     });
                 }
             });

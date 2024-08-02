@@ -58,14 +58,18 @@
                     await Swal.fire({
                         icon: 'success',
                         title: 'Welcome!',
-                        text: result.message
+                        text: 'We hope you enjoy your stay!',
+                        timer: 4000,
+                        timerProgressBar: true
                     });
                     window.location.href = '/'; // Redirect to homepage
                 } else {
                     await Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: result.error
+                        text: result.error,
+                        timer: 4000,
+                        timerProgressBar: true
                     });
                 }
             } catch (err) {
