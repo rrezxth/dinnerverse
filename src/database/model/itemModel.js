@@ -5,7 +5,6 @@ const itemSchema = new Schema({
     menu_id: {
         type: Schema.Types.ObjectId,
         ref: 'Menu',
-        required: true,
     },
     photo: {
         type: String,
