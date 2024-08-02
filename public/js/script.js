@@ -159,13 +159,11 @@ async function handleOrderNowButtonClick(user_id, restaurant_id) {
 
             // Show notif
             Swal.fire({
-                toast: true,
-                background: "#03AC13",
-                html: "<h6 class='text-light text-small px-1'>Thank you for your order!</h6>",
-                position: "bottom",
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: true,
+                icon: "success",
+                title: "Order has been placed.",
+                text: "Thank you for your order!",
+                timer: 4000,
+                timerProgressBar: true
             });
         } else {
             console.error('Failed to create order');
