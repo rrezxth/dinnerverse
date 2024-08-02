@@ -308,7 +308,7 @@ app.post('/api/submit-order', isAuthenticated, async (req, res) => {
     }
 });
 
-app.post('/api/update-profile', async (req, res) => {
+app.post('/api/update-profile', isAuthenticated, async (req, res) => {
     try {
         const userId = req.session.user.id;
         const { field, value } = req.body;
