@@ -20,42 +20,45 @@
                 <div class="row">
                     <div class="col-md-3 offset-md-3">
                         <div class="text-center">
-                            <img class="img-fluid" src="/image/web_photos/user_default.png"
-                                 alt="">
+                            <img class="img-fluid" src="/image/web_photos/user_default.png" alt="">
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="card py-md-5 px-md-5 px-1">
-                            <div class="row">
+                            <div class="row mb-3">
                                 <div class="col-md-4">
-                                    <h4 class="text-muted">Name : </h4>
+                                    <h4 class="text-muted">Name :</h4>
                                 </div>
-                                <div class="col-md-8">
-                                    <h4 class="text-muted">{{user.name}}</h4>
+                                <div class="col-md-8 d-flex align-items-center">
+                                    <h4 class="text-muted mr-3" id="name">{{user.name}}</h4>
+                                    <button class="btn btn-outline-info edit-btn" data-field="name">Edit</button>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row mb-3">
                                 <div class="col-md-4">
-                                    <h4 class="text-muted">Email : </h4>
+                                    <h4 class="text-muted">Email :</h4>
                                 </div>
-                                <div class="col-md-8">
-                                    <h4 class="text-muted">{{user.email}}</h4>
+                                <div class="col-md-8 d-flex align-items-center">
+                                    <h4 class="text-muted mr-3" id="email">{{user.email}}</h4>
+                                    <button class="btn btn-outline-info edit-btn" data-field="email">Edit</button>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row mb-3">
                                 <div class="col-md-4">
-                                    <h4 class="text-muted">Phone Number : </h4>
+                                    <h4 class="text-muted">Phone Number :</h4>
                                 </div>
-                                <div class="col-md-8">
-                                    <h4 class="text-muted">{{user.phoneNumber}}</h4>
+                                <div class="col-md-8 d-flex align-items-center">
+                                    <h4 class="text-muted mr-3" id="phoneNumber">{{user.phoneNumber}}</h4>
+                                    <button class="btn btn-outline-info edit-btn" data-field="phoneNumber">Edit</button>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row mb-3">
                                 <div class="col-md-4">
-                                    <h4 class="text-muted">Address : </h4>
+                                    <h4 class="text-muted">Address :</h4>
                                 </div>
-                                <div class="col-md-8">
-                                    <h4 class="text-muted">{{user.address}}</h4>
+                                <div class="col-md-8 d-flex align-items-center">
+                                    <h4 class="text-muted mr-3" id="address">{{user.address}}</h4>
+                                    <button class="btn btn-outline-info edit-btn" data-field="address">Edit</button>
                                 </div>
                             </div>
                         </div>
@@ -64,5 +67,79 @@
             </div>
         </div>
     </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const editButtons = document.querySelectorAll('.edit-btn');
+
+            editButtons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const field = event.target.getAttribute('data-field');
+                    const fieldContainer = event.target.parentElement;
+
+                    const currentValue = fieldContainer.querySelector('h4').innerText;
+                    fieldContainer.innerHTML = `
+                    <input type="text" class="form-control mr-3" value="${currentValue}" data-field="${field}">
+                    <button class="btn btn-primary save-btn" data-field="${field}">Save</button>
+                    <button class="btn btn-warning cancel-btn" data-field="${field}">Cancel</button>
+                `;
+
+                    fieldContainer.querySelector('.save-btn').addEventListener('click', saveChanges);
+                    fieldContainer.querySelector('.cancel-btn').addEventListener('click', cancelChanges);
+                });
+            });
+
+            const saveChanges = async (event) => {
+                const field = event.target.getAttribute('data-field');
+                const input = document.querySelector(`input[data-field="${field}"]`);
+                const newValue = input.value;
+
+                const response = await fetch('/api/update-profile', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ field, value: newValue })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    window.location.reload();
+                } else {
+                    alert(result.message);
+                }
+            };
+
+            const cancelChanges = (event) => {
+                const field = event.target.getAttribute('data-field');
+                const input = document.querySelector(`input[data-field="${field}"]`);
+                const currentValue = input.getAttribute('value');
+
+                const fieldContainer = event.target.parentElement;
+                fieldContainer.innerHTML = `
+                <h4 class="text-muted mr-3">${currentValue}</h4>
+                <button class="btn btn-outline-info edit-btn" data-field="${field}">Edit</button>
+            `;
+
+                fieldContainer.querySelector('.edit-btn').addEventListener('click', (event) => {
+                    const field = event.target.getAttribute('data-field');
+                    const fieldContainer = event.target.parentElement;
+
+                    const currentValue = fieldContainer.querySelector('h4').innerText;
+                    fieldContainer.innerHTML = `
+                    <input type="text" class="form-control mr-3" value="${currentValue}" data-field="${field}">
+                    <button class="btn btn-primary save-btn" data-field="${field}">Save</button>
+                    <button class="btn btn-warning cancel-btn" data-field="${field}">Cancel</button>
+                `;
+
+                    fieldContainer.querySelector('.save-btn').addEventListener('click', saveChanges);
+                    fieldContainer.querySelector('.cancel-btn').addEventListener('click', cancelChanges);
+                });
+            };
+        });
+    </script>
+
+
 </body>
 </html>

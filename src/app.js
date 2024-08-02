@@ -308,3 +308,27 @@ app.post('/api/submit-order', isAuthenticated, async (req, res) => {
     }
 });
 
+app.post('/api/update-profile', async (req, res) => {
+    try {
+        const userId = req.session.user.id;
+        const { field, value } = req.body;
+
+        if (!userId || !field || value === undefined) {
+            return res.status(400).json({ success: false, message: 'Invalid input' });
+        }
+
+        const update = { [field]: value };
+        const user = await User.findByIdAndUpdate(userId, update, { new: true });
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Update session data
+        req.session.user[field] = value;
+
+        res.json({ success: true, data: user });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
