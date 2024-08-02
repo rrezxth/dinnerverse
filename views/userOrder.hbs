@@ -19,8 +19,8 @@
         <div class="container mt-5">
             <h2 class="mb-4">Your Orders</h2>
             {{#each orders}}
-                <div class="card mb-3">
-                    <div class="card-header">
+                <div class="card {{#unless @first}}mt-5{{/unless}} mb-3">
+                <div class="card-header">
                         <strong>Order ID:</strong> {{this._id}}
                     </div>
                     <div class="card-body">
