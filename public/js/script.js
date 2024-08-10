@@ -1,11 +1,9 @@
-console.log("/script/.js is active");
-
-// DEVELOPMENT ONLY
 function resetCart() {
     localStorage.setItem("cart", JSON.stringify([]));
     updateCart();
 }
 
+// Called when user adds an item to their cart
 function addFoodToBasket(did, dname, dprice, dimage) {
     let cart = localStorage.getItem("cart");
     let products;
@@ -41,6 +39,7 @@ function addFoodToBasket(did, dname, dprice, dimage) {
     updateCart();
 }
 
+// Can be called when a notification is needed
 function displayNotification(message) {
     Swal.fire({
         toast: true,
@@ -53,6 +52,7 @@ function displayNotification(message) {
     });
 }
 
+// Updates the cart -- call after adding or deleting items
 function updateCart() {
     const cart = JSON.parse(localStorage.getItem("cart"));
     if (cart === null || cart.length === 0) {
@@ -112,6 +112,7 @@ function removeBook(id) {
 =================================
  */
 
+// Pressing OrderNow on the modal calls this function
 async function handleOrderNowButtonClick(user_id, restaurant_id) {
     // Close the modal
     var modalElement = document.getElementById("staticBackdrop");
@@ -139,9 +140,7 @@ async function handleOrderNowButtonClick(user_id, restaurant_id) {
         pickup_time
     };
 
-    // DEBUG
-    console.log(orderData);
-
+    // Uses API submit-order to add the order to MongoDB
     try {
         const response = await fetch('/api/submit-order', {
             method: 'POST',
@@ -172,26 +171,3 @@ async function handleOrderNowButtonClick(user_id, restaurant_id) {
         console.error('Error:', error);
     }
 }
-
-
-/*
-function handleOrderNowButtonClick() {
-    // Close the modal
-    var modalElement = document.getElementById("staticBackdrop");
-    var modalInstance = bootstrap.Modal.getInstance(modalElement);
-    modalInstance.hide();
-
-    resetCart();
-
-    // Show the SweetAlert notification
-    Swal.fire({
-        toast: true,
-        background: "#03AC13",
-        html: "<h6 class='text-light text-small px-1'>Thank you for your order!</h6>",
-        position: "bottom",
-        showConfirmButton: false,
-        timer: 2000,
-        timerProgressBar: true,
-    });
-}
-*/
