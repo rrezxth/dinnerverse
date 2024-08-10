@@ -15,13 +15,13 @@ USER PROFILE Webpage, (/user/profile)
 </head>
 
 <body>
-    {{> navbar}}
-    <section>
-        <div class="container-fluid pb-5">
-            {{#if (eq user.role 'customer')}}
-                {{> userbar}}
-            {{/if}}
-
+{{> navbar}}
+<section>
+    <div class="container-fluid pb-5">
+        <!-- CHECK which kind of USER.role is logged in -->
+        <!-- USER is 'Customer' -->
+        {{#if (eq user.role 'customer')}}
+            {{> userbar}}
             <div class="container userSection">
                 <div class="row">
                     <div class="col-md-3 offset-md-2">
@@ -71,81 +71,132 @@ USER PROFILE Webpage, (/user/profile)
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        {{else if (eq user.role 'restaurant')}}
+            <!-- USER is 'Restaurant' -->
+            <div class="container restaurantSection">
+                <div class="row">
+                    <div class="col-md-3 offset-md-2">
+                        <div class="text-center">
+                            <img class="img-fluid" src="/image/web_photos/restaurant_default.png" alt="">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card py-md-5 px-md-5 px-1">
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <h4 class="text-muted">Restaurant Name :</h4>
+                                </div>
+                                <div class="col-md-8 d-flex align-items-center">
+                                    <h4 class="text-muted mr-3" id="restaurantName">{{user.restaurantName}}</h4>
+                                    <button class="btn btn-outline-info edit-btn" data-field="restaurantName">Edit</button>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <h4 class="text-muted">Email :</h4>
+                                </div>
+                                <div class="col-md-8 d-flex align-items-center">
+                                    <h4 class="text-muted mr-3" id="email">{{user.email}}</h4>
+                                    <button class="btn btn-outline-info edit-btn" data-field="email">Edit</button>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <h4 class="text-muted">Phone Number :</h4>
+                                </div>
+                                <div class="col-md-8 d-flex align-items-center">
+                                    <h4 class="text-muted mr-3" id="phoneNumber">{{user.phoneNumber}}</h4>
+                                    <button class="btn btn-outline-info edit-btn" data-field="phoneNumber">Edit</button>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <h4 class="text-muted">Address :</h4>
+                                </div>
+                                <div class="col-md-8 d-flex align-items-center">
+                                    <h4 class="text-muted mr-3" id="address">{{user.address}}</h4>
+                                    <button class="btn btn-outline-info edit-btn" data-field="address">Edit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/if}}
+    </div>
+</section>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const editButtons = document.querySelectorAll('.edit-btn');
+<script>
+    // JavaScript code remains the same as in your original template
+    document.addEventListener('DOMContentLoaded', () => {
+        const editButtons = document.querySelectorAll('.edit-btn');
 
-            editButtons.forEach(button => {
-                button.addEventListener('click', (event) => {
-                    const field = event.target.getAttribute('data-field');
-                    const fieldContainer = event.target.parentElement;
+        editButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                const field = event.target.getAttribute('data-field');
+                const fieldContainer = event.target.parentElement;
 
-                    const currentValue = fieldContainer.querySelector('h4').innerText;
-                    fieldContainer.innerHTML = `
+                const currentValue = fieldContainer.querySelector('h4').innerText;
+                fieldContainer.innerHTML = `
                     <input type="text" class="form-control mr-3" value="${currentValue}" data-field="${field}">
                     <button class="btn btn-primary save-btn" data-field="${field}">Save</button>
                     <button class="btn btn-warning cancel-btn" data-field="${field}">Cancel</button>
                 `;
 
-                    fieldContainer.querySelector('.save-btn').addEventListener('click', saveChanges);
-                    fieldContainer.querySelector('.cancel-btn').addEventListener('click', cancelChanges);
-                });
+                fieldContainer.querySelector('.save-btn').addEventListener('click', saveChanges);
+                fieldContainer.querySelector('.cancel-btn').addEventListener('click', cancelChanges);
+            });
+        });
+
+        const saveChanges = async (event) => {
+            const field = event.target.getAttribute('data-field');
+            const input = document.querySelector(`input[data-field="${field}"]`);
+            const newValue = input.value;
+
+            const response = await fetch('/api/update-profile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ field, value: newValue })
             });
 
-            const saveChanges = async (event) => {
-                const field = event.target.getAttribute('data-field');
-                const input = document.querySelector(`input[data-field="${field}"]`);
-                const newValue = input.value;
+            const result = await response.json();
 
-                const response = await fetch('/api/update-profile', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ field, value: newValue })
-                });
+            if (result.success) {
+                window.location.reload();
+            } else {
+                alert(result.message);
+            }
+        };
 
-                const result = await response.json();
+        const cancelChanges = (event) => {
+            const field = event.target.getAttribute('data-field');
+            const input = document.querySelector(`input[data-field="${field}"]`);
+            const currentValue = input.getAttribute('value');
 
-                if (result.success) {
-                    window.location.reload();
-                } else {
-                    alert(result.message);
-                }
-            };
-
-            const cancelChanges = (event) => {
-                const field = event.target.getAttribute('data-field');
-                const input = document.querySelector(`input[data-field="${field}"]`);
-                const currentValue = input.getAttribute('value');
-
-                const fieldContainer = event.target.parentElement;
-                fieldContainer.innerHTML = `
+            const fieldContainer = event.target.parentElement;
+            fieldContainer.innerHTML = `
                 <h4 class="text-muted mr-3">${currentValue}</h4>
                 <button class="btn btn-outline-info edit-btn" data-field="${field}">Edit</button>
             `;
 
-                fieldContainer.querySelector('.edit-btn').addEventListener('click', (event) => {
-                    const field = event.target.getAttribute('data-field');
-                    const fieldContainer = event.target.parentElement;
+            fieldContainer.querySelector('.edit-btn').addEventListener('click', (event) => {
+                const field = event.target.getAttribute('data-field');
+                const fieldContainer = event.target.parentElement;
 
-                    const currentValue = fieldContainer.querySelector('h4').innerText;
-                    fieldContainer.innerHTML = `
+                const currentValue = fieldContainer.querySelector('h4').innerText;
+                fieldContainer.innerHTML = `
                     <input type="text" class="form-control mr-3" value="${currentValue}" data-field="${field}">
                     <button class="btn btn-primary save-btn" data-field="${field}">Save</button>
                     <button class="btn btn-warning cancel-btn" data-field="${field}">Cancel</button>
                 `;
 
-                    fieldContainer.querySelector('.save-btn').addEventListener('click', saveChanges);
-                    fieldContainer.querySelector('.cancel-btn').addEventListener('click', cancelChanges);
-                });
-            };
-        });
-    </script>
-
-
+                fieldContainer.querySelector('.save-btn').addEventListener('click', saveChanges);
+                fieldContainer.querySelector('.cancel-btn').addEventListener('click', cancelChanges);
+            });
+        };
+    });
+</script>
 </body>
 </html>
