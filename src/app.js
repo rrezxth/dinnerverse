@@ -129,35 +129,54 @@ app.get('/user/profile', isAuthenticated, (req, res) => {
 // USER RECENT ORDERS Page
 app.get('/user/retrieve-orders/', isAuthenticated, async (req, res) => {
     try {
-        const orders = await Order.find({ user_id: req.session.user.id })
-            .populate('restaurant_id', 'name')
-            .populate('items.item_id', 'name')
-            .sort({ createdAt: -1 })
-            .lean();
+        let orders;
+
+        if (req.session.user.role === 'customer') {
+            // Fetch orders for customers
+            orders = await Order.find({ user_id: req.session.user.id })
+                .populate('restaurant_id', 'name')
+                .populate('items.item_id', 'name')
+                .sort({ createdAt: -1 })
+                .lean();
+        } else if (req.session.user.role === 'restaurant') {
+            // Fetch orders for restaurants
+            const restaurant = await Restaurant.findOne({ account: req.session.user.id });
+            if (restaurant) {
+                orders = await Order.find({ restaurant_id: restaurant._id })
+                    .populate('user_id', 'name email') // Populate customer info
+                    .populate('items.item_id', 'name')
+                    .sort({ createdAt: -1 })
+                    .lean();
+            } else {
+                return res.status(400).send({ error: 'Restaurant data not found' });
+            }
+        }
 
         // Format the dates before rendering
-        orders.forEach(order => {
-            order.pickup_time = new Date(order.pickup_time).toLocaleString('en-US', {
-                weekday: 'long',
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-                second: 'numeric',
-                hour12: true
+        if (orders) {
+            orders.forEach(order => {
+                order.pickup_time = new Date(order.pickup_time).toLocaleString('en-US', {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    second: 'numeric',
+                    hour12: true
+                });
+                order.createdAt = new Date(order.createdAt).toLocaleString('en-US', {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    second: 'numeric',
+                    hour12: true
+                });
             });
-            order.createdAt = new Date(order.createdAt).toLocaleString('en-US', {
-                weekday: 'long',
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric',
-                hour: 'numeric',
-                minute: 'numeric',
-                second: 'numeric',
-                hour12: true
-            });
-        });
+        }
 
         res.render('userOrder.hbs', { orders });
     } catch (error) {
@@ -165,6 +184,7 @@ app.get('/user/retrieve-orders/', isAuthenticated, async (req, res) => {
         throw error;
     }
 });
+
 
 // SELECT RESTAURANT Page
 app.get('/select-restaurant', isAuthenticated, async(req, res) => {
@@ -222,16 +242,29 @@ app.post('/login', async (req, res) => {
             return res.status(400).send({ error: 'Invalid credentials' });
         }
 
-        // TODO: Can be turned into mongoose calls
-        req.session.user = {
+        // Initialize session data for future use
+        const sessionData = {
             id: user._id,
             email: user.email.toLowerCase(),
-            username: user.username,
+            username: user.username.toLowerCase(),
             name: user.name,
             address: user.address,
             phoneNumber: user.phoneNumber,
             role: user.role,
         };
+
+        // If user is a restaurant, fetch alias field data from the restaurants collection
+        if (user.role === 'restaurant') {
+            const restaurant = await Restaurant.findOne({ account: user._id });
+            if (restaurant) {
+                sessionData.alias = restaurant.alias.toLowerCase();
+            } else {
+                return res.status(400).send({ error: 'Restaurant data not found' });
+            }
+        }
+
+        // Save session data
+        req.session.user = sessionData;
 
         res.status(200).json({ message: 'Login successful!' });
     } catch (err) {
@@ -327,5 +360,25 @@ app.post('/api/update-profile', isAuthenticated, async (req, res) => {
         res.json({ success: true, data: user });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
+    }
+});
+
+app.post('/api/update-order-status/:orderId', async (req, res) => {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    try {
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        order.status = status;
+        await order.save();
+
+        res.status(200).json({ success: true, message: 'Order status updated' });
+    } catch (error) {
+        console.error('Error updating order status:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });

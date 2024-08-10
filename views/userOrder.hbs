@@ -13,12 +13,29 @@ USER ORDERS Webpage, (/user/retrieve-order)
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Orders</title>
     <style>
-        /* Ensure consistent vertical spacing with userProfile.hbs */
+        /* force consistent vertical spacing with userProfile.hbs */
         .orderSection {
-            margin-top: 50px; /* Adjust this value to match the vertical position */
+            margin-top: 50px;
+        }
+
+        .status-box {
+            display: inline-block;
+            padding: 10px 20px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            background-color: var(--tertiary-color);
+            color: #007bff;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .status-box:hover {
+            background-color: #007bff;
+            color: #ffffff;
         }
     </style>
-    <!-- Include SweetAlert2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 </head>
 
@@ -49,7 +66,7 @@ USER ORDERS Webpage, (/user/retrieve-order)
                                 <p><strong>Status:</strong> {{this.status}}</p>
                             {{else if (eq ../user.role 'restaurant')}}
                                 <p><strong>Status:</strong>
-                                    <a href="#" class="status-link" data-order-id="{{this._id}}" data-current-status="{{this.status}}">
+                                    <a href="#" class="status-box" data-order-id="{{this._id}}" data-current-status="{{this.status}}">
                                         {{this.status}}
                                     </a>
                                 </p>
@@ -91,11 +108,9 @@ USER ORDERS Webpage, (/user/retrieve-order)
     </div>
 </section>
 
-<!-- Include SweetAlert2 JS -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const statusLinks = document.querySelectorAll('.status-link');
+        const statusLinks = document.querySelectorAll('.status-box');
 
         statusLinks.forEach(link => {
             link.addEventListener('click', (event) => {
