@@ -176,10 +176,6 @@ app.get('/select-restaurant', isAuthenticated, async(req, res) => {
 app.get('/create-order', isAuthenticated,  async (req, res) => {
     const restaurantId = req.query.restaurantId;
 
-    // TODO: DEBUGGING
-    console.log('Received userId:', req.session.user.id)
-    console.log('Received restaurantId:', restaurantId);
-
     try {
         const restaurant = await Restaurant.findById(restaurantId);
         if (!restaurant) {
