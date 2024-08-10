@@ -225,7 +225,7 @@ app.post('/login', async (req, res) => {
         // TODO: Can be turned into mongoose calls
         req.session.user = {
             id: user._id,
-            email: user.email,
+            email: user.email.toLowerCase(),
             username: user.username,
             name: user.name,
             address: user.address,
@@ -254,8 +254,8 @@ app.post('/api/register', async(req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({
-            email: email,
-            username: email,
+            email: email.toLowerCase(),
+            username: email.toLowerCase(),
             password: hashedPassword,
             name: name,
             address: address,
