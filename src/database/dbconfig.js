@@ -1,6 +1,6 @@
 require('dotenv').config({ path: '../../.env' });
 const mongoose = require('mongoose');
-const databaseUrl = process.env.DATABASE_URL;
+const databaseUrl = process.env.DATABASE_URL;       // databaseUrl uses data from .env file in the root directory
 
 async function connectToMongo() {
     try {
