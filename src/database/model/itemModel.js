@@ -1,3 +1,9 @@
+/*
+NOTES:
+-- Item must have:
+[menu_id(type-Menu), description, alias, name, price, photo(OPTIONAL)]
+ */
+
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 

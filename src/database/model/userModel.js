@@ -1,3 +1,9 @@
+/*
+NOTES:
+-- User must have:
+[email, password, name, address, phoneNumber, username(RESTAURANT-only), role]
+ */
+
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 

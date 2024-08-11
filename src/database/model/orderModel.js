@@ -1,3 +1,9 @@
+/*
+NOTES:
+-- Order must have:
+[user_id(type-User), restaurant_id, items(type-array), total_price, status, pickup_time]
+ */
+
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 

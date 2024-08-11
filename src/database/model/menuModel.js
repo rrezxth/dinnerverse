@@ -1,3 +1,9 @@
+/*
+NOTES:
+-- Menu must have:
+[items(type-Array & type-Item), name, restaurant_id(type-Restaurant)]
+ */
+
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 

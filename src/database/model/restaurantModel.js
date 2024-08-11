@@ -1,3 +1,9 @@
+/*
+NOTES:
+-- Restaurant must have:
+[account(type-User), name, address, phoneNumber, alias]
+ */
+
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 

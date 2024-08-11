@@ -131,6 +131,7 @@ app.get('/user/retrieve-orders/', isAuthenticated, async (req, res) => {
     try {
         let orders;
 
+        // Check if USER is customer
         if (req.session.user.role === 'customer') {
             // Fetch orders for customers
             orders = await Order.find({ user_id: req.session.user.id })
@@ -138,8 +139,11 @@ app.get('/user/retrieve-orders/', isAuthenticated, async (req, res) => {
                 .populate('items.item_id', 'name')
                 .sort({ createdAt: -1 })
                 .lean();
+
+            // Check if USER is restaurant
         } else if (req.session.user.role === 'restaurant') {
-            // Fetch orders for restaurants
+
+            // Then, fetch orders for restaurants
             const restaurant = await Restaurant.findOne({ account: req.session.user.id });
             if (restaurant) {
                 orders = await Order.find({ restaurant_id: restaurant._id })
@@ -153,6 +157,7 @@ app.get('/user/retrieve-orders/', isAuthenticated, async (req, res) => {
         }
 
         // Format the dates before rendering
+        // *** Can be turned into function ***
         if (orders) {
             orders.forEach(order => {
                 order.pickup_time = new Date(order.pickup_time).toLocaleString('en-US', {
@@ -198,21 +203,20 @@ app.get('/user/modify-items', isAuthenticated, async(req, res) => {
             return res.status(404).send('Restaurant not found');
         }
 
-        // Fetch the items
+        // Fetch the items from MENU collections
         const menu = await Menu.findOne({ restaurant_id: restaurantId }).populate('items');
         if (!menu) {
             console.error('Menu not found for restaurantId:', restaurantId);
             return res.status(404).send('Menu not found');
         }
 
+        // Sending restaurant and items info
         res.render('restaurantItems', { restaurant, items: menu.items });
     } catch (err) {
         console.error('Error loading modify items page:', err);
         res.status(500).send('Error loading modify items page');
     }
 });
-
-
 
 // SELECT RESTAURANT Page
 app.get('/select-restaurant', isAuthenticated, async(req, res) => {
@@ -225,13 +229,14 @@ app.get('/create-order', isAuthenticated,  async (req, res) => {
     const restaurantId = req.query.restaurantId;
 
     try {
+        // Fetch restaurant details
         const restaurant = await Restaurant.findById(restaurantId);
         if (!restaurant) {
             console.error('Restaurant not found');
             return res.status(404).send('Restaurant not found');
         }
 
-        // Get menu
+        // Fetch menu from restaurantId
         const objectId = new mongoose.Types.ObjectId(restaurantId);
         const menu = await Menu.findOne({ restaurant_id: objectId }).populate('items');
         if (!menu) {
@@ -251,13 +256,14 @@ app.get('/create-order', isAuthenticated,  async (req, res) => {
 // API CALLS
 // ==============================
 
+// Call route to validate login credentials
 app.post('/login', async (req, res) => {
     const { identifier, password } = req.body;
     try {
-        // Find user first with their EMAIL
+        // Find user.custoer first with their EMAIL
         let user = await User.findOne({ email: identifier });
 
-        // NO USER -- find restaurant with their USER
+        // NO USER -- find user.restaurant with their user/email
         if (!user) {
             user = await User.findOne({ username: identifier });
             if (!user) {
@@ -271,6 +277,7 @@ app.post('/login', async (req, res) => {
         }
 
         // Initialize session data for future use
+        // *** Can be turned into function? ***
         const sessionData = {
             id: user._id,
             email: user.email.toLowerCase(),
@@ -282,6 +289,7 @@ app.post('/login', async (req, res) => {
         };
 
         // If user is a restaurant, fetch alias field data from the restaurants collection
+        // user.alias and user.restaurantId needed for some functions
         if (user.role === 'restaurant') {
             const restaurant = await Restaurant.findOne({ account: user._id });
             if (restaurant) {
@@ -301,6 +309,7 @@ app.post('/login', async (req, res) => {
     }
 });
 
+// Call route when user logs out
 app.get('/api/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) {
@@ -310,10 +319,12 @@ app.get('/api/logout', (req, res) => {
     });
 });
 
-
+// Call route when a user registers a new account
 app.post('/api/register', async(req, res) => {
     const { name, email, password, address, phone } = req.body;
     try {
+
+        // *** Can be turned into function? ***
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new User({
             email: email.toLowerCase(),
@@ -323,6 +334,8 @@ app.post('/api/register', async(req, res) => {
             address: address,
             phoneNumber: phone,
             role: 'customer' });
+
+        // If no errors -- save information
         await newUser.save();
         res.status(200).json({ message: 'Registration successful!' });
     } catch (err) {
@@ -334,6 +347,7 @@ app.post('/api/register', async(req, res) => {
     }
 });
 
+// *** UNUSED? ***
 app.get('/api/available-restaurants', isAuthenticated, async (req, res) => {
     try {
         const restaurants = await Restaurant.find();
@@ -343,14 +357,17 @@ app.get('/api/available-restaurants', isAuthenticated, async (req, res) => {
     }
 });
 
+// Call route when ORDER NOW is clicked
 app.post('/api/submit-order', isAuthenticated, async (req, res) => {
     try {
+        // Save all information from the modal window
         const { user_id, restaurant_id, items, total_price, pickup_time } = req.body;
 
         if (!user_id || !restaurant_id || !items || !total_price || !pickup_time) {
             return res.status(400).json({ error: 'All fields are required' });
         }
 
+        // *** Can be turned into a function? ***
         const newOrder = new Order({
             user_id,
             restaurant_id,
@@ -360,13 +377,17 @@ app.post('/api/submit-order', isAuthenticated, async (req, res) => {
             status: 'Preparing' // Default
         });
 
+        // Save new order into the MongoDB
         await newOrder.save();
+
         res.status(201).json({ message: 'Order created successfully', order: newOrder });
     } catch (error) {
         res.status(500).json({ error: 'Failed to create order' });
     }
 });
 
+// Call when user.customer profile is updated
+// Works for singular or multiple field modifications
 app.post('/api/update-profile', isAuthenticated, async (req, res) => {
     try {
         const userId = req.session.user.id;
@@ -376,6 +397,7 @@ app.post('/api/update-profile', isAuthenticated, async (req, res) => {
             return res.status(400).json({ success: false, message: 'Invalid input' });
         }
 
+        // Works on any field
         const update = { [field]: value };
         const user = await User.findByIdAndUpdate(userId, update, { new: true });
 
@@ -383,7 +405,7 @@ app.post('/api/update-profile', isAuthenticated, async (req, res) => {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        // Update session data
+        // Update current session data
         req.session.user[field] = value;
 
         res.json({ success: true, data: user });
@@ -392,7 +414,8 @@ app.post('/api/update-profile', isAuthenticated, async (req, res) => {
     }
 });
 
-app.post('/api/update-order-status/:orderId', async (req, res) => {
+// Call route when user.restaurant changes [Status] of :orderId
+app.post('/api/update-order-status/:orderId', isAuthenticated, async (req, res) => {
     const { orderId } = req.params;
     const { status } = req.body;
 
@@ -402,6 +425,7 @@ app.post('/api/update-order-status/:orderId', async (req, res) => {
             return res.status(404).json({ error: 'Order not found' });
         }
 
+        // Save new status information to MongoDB
         order.status = status;
         await order.save();
 
@@ -412,7 +436,8 @@ app.post('/api/update-order-status/:orderId', async (req, res) => {
     }
 });
 
-app.post('/api/edit-item/:itemId', async (req, res) => {
+// Call route when user.restaurant edits their dish price
+app.post('/api/edit-item/:itemId', isAuthenticated, async (req, res) => {
     const { itemId } = req.params;
     const { price } = req.body;
 
@@ -422,7 +447,7 @@ app.post('/api/edit-item/:itemId', async (req, res) => {
             return res.status(404).json({ error: 'Item not found' });
         }
 
-        // Update price
+        // Save new price to MongoDB
         item.price = price;
         await item.save();
 
@@ -433,7 +458,8 @@ app.post('/api/edit-item/:itemId', async (req, res) => {
     }
 });
 
-app.delete('/api/delete-item/:itemId', async (req, res) => {
+// Call route when user.restaurant deletes one of their item/dish
+app.delete('/api/delete-item/:itemId', isAuthenticated, async (req, res) => {
     const { itemId } = req.params;
 
     try {
