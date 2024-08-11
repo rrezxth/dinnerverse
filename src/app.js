@@ -185,6 +185,34 @@ app.get('/user/retrieve-orders/', isAuthenticated, async (req, res) => {
     }
 });
 
+// SHOW RESTAURANT ITEMS Page
+app.get('/user/modify-items', isAuthenticated, async(req, res) => {
+    try {
+        // Get the restaurant ID from the session
+        const restaurantId = req.session.user.restaurantId;
+
+        // Fetch the restaurant details
+        const restaurant = await Restaurant.findById(restaurantId);
+        if (!restaurant) {
+            console.error('Restaurant not found');
+            return res.status(404).send('Restaurant not found');
+        }
+
+        // Fetch the items
+        const menu = await Menu.findOne({ restaurant_id: restaurantId }).populate('items');
+        if (!menu) {
+            console.error('Menu not found for restaurantId:', restaurantId);
+            return res.status(404).send('Menu not found');
+        }
+
+        res.render('restaurantItems', { restaurant, items: menu.items });
+    } catch (err) {
+        console.error('Error loading modify items page:', err);
+        res.status(500).send('Error loading modify items page');
+    }
+});
+
+
 
 // SELECT RESTAURANT Page
 app.get('/select-restaurant', isAuthenticated, async(req, res) => {
@@ -258,6 +286,7 @@ app.post('/login', async (req, res) => {
             const restaurant = await Restaurant.findOne({ account: user._id });
             if (restaurant) {
                 sessionData.alias = restaurant.alias.toLowerCase();
+                sessionData.restaurantId = restaurant._id;
             } else {
                 return res.status(400).send({ error: 'Restaurant data not found' });
             }
@@ -379,6 +408,45 @@ app.post('/api/update-order-status/:orderId', async (req, res) => {
         res.status(200).json({ success: true, message: 'Order status updated' });
     } catch (error) {
         console.error('Error updating order status:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.post('/api/edit-item/:itemId', async (req, res) => {
+    const { itemId } = req.params;
+    const { price } = req.body;
+
+    try {
+        const item = await Item.findById(itemId);
+        if (!item) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+
+        // Update price
+        item.price = price;
+        await item.save();
+
+        res.status(200).json({ success: true, message: 'Item price updated successfully' });
+    } catch (error) {
+        console.error('Error updating item price:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.delete('/api/delete-item/:itemId', async (req, res) => {
+    const { itemId } = req.params;
+
+    try {
+        // Find the item by its ID and delete it
+        const item = await Item.findByIdAndDelete(itemId);
+
+        if (!item) {
+            return res.status(404).json({ error: 'Item not found' });
+        }
+
+        res.status(200).json({ success: true, message: 'Item deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting item:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
