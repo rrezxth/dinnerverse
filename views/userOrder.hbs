@@ -66,6 +66,7 @@ USER ORDERS Webpage, (/user/retrieve-order)
                             {{#if (eq ../user.role 'customer')}}
                                 <p><strong>Status:</strong> {{this.status}}</p>
                             {{else if (eq ../user.role 'restaurant')}}
+                                <p><strong>Customer Name:</strong> {{this.user_id.name}}</p>
                                 <p><strong>Status:</strong>
                                     <a href="#" class="status-box" data-order-id="{{this._id}}" data-current-status="{{this.status}}">
                                         {{this.status}}

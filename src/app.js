@@ -143,7 +143,7 @@ app.get('/user/retrieve-orders/', isAuthenticated, async (req, res) => {
             const restaurant = await Restaurant.findOne({ account: req.session.user.id });
             if (restaurant) {
                 orders = await Order.find({ restaurant_id: restaurant._id })
-                    .populate('user_id', 'name email') // Populate customer info
+                    .populate('user_id', 'name email')
                     .populate('items.item_id', 'name')
                     .sort({ createdAt: -1 })
                     .lean();
