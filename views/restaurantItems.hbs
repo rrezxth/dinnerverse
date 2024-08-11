@@ -1,0 +1,168 @@
+<!--
+NOTES:
+Modify Restaurant Items Webpage, (/modify-items)
+-- A webpage dedicated for users-restaurant to modify their dishes.
+-- Will show every saved/registered items from said restaurant in MongoDB.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modify Restaurant Items</title>
+    <!-- Include SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <style>
+        /* force consistent vertical spacing with userProfile.hbs */
+        .orderSection {
+            margin-top: 100px;
+        }
+    </style>
+</head>
+
+<body>
+{{> navbar}}
+<section class="container-fluid pb-5">
+    {{> adminbar}}
+    <div class="container orderSection restaurantSection">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="text-center">Items from {{user.name}}</h2>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col">Photo</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#each items}}
+                        <tr>
+                            <td>
+                                <img src="/image/restaurant_photos/{{../user.alias}}/{{this.alias}}.jpg" alt="{{this.name}}" class="img-fluid" style="height: 100px; "width="150px">
+                            </td>
+                            <td>{{this.name}}</td>
+                            <td>${{this.price}}</td>
+                            <td>
+                                <button class="btn btn-primary btn-sm" onclick="editItem('{{this._id}}')">Edit</button>
+                                <button class="btn btn-danger btn-sm" onclick="deleteItem('{{this._id}}')">Delete</button>
+                            </td>
+                        </tr>
+                    {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Include SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function editItem(itemId) {
+        Swal.fire({
+            title: 'Edit Item Price',
+            input: 'text',
+            inputLabel: 'Enter the new price:',
+            inputPlaceholder: 'Enter new price',
+            inputAttributes: {
+                'aria-label': 'Enter new price'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Update',
+            showLoaderOnConfirm: true,
+            preConfirm: (newPrice) => {
+                // Basic validation to ensure newPrice is a valid number
+                if (isNaN(newPrice) || newPrice <= 0) {
+                    Swal.showValidationMessage('Please enter a valid price');
+                    return false;
+                }
+
+                return fetch(`/api/edit-item/${itemId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ price: newPrice })
+                })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(response.statusText);
+                            }
+                            return response.json();
+                        })
+                        .catch(error => {
+                            Swal.showValidationMessage(`Request failed: ${error}`);
+                        });
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Price Updated!',
+                    text: 'The item price has been updated.',
+                    icon: 'success'
+                }).then(() => {
+                    window.location.reload();
+                });
+            }
+        });
+    }
+
+    function deleteItem(itemId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/api/delete-item/${itemId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                        .then(response => {
+                            if (response.ok) {
+                                Swal.fire(
+                                        'Deleted!',
+                                        'The item has been deleted.',
+                                        'success'
+                                ).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire(
+                                        'Error!',
+                                        'Failed to delete the item.',
+                                        'error'
+                                );
+                            }
+                        })
+                        .catch(error => {
+                            Swal.fire(
+                                    'Error!',
+                                    'An error occurred while deleting the item.',
+                                    'error'
+                            );
+                        });
+            }
+        });
+    }
+</script>
+</body>
+
+</html>
