@@ -240,7 +240,6 @@ p{
     justify-content: end;
 }
 
-
 .shadow{
     padding: 1rem ;
     box-shadow: 4px 3px 5px var(--primary-color),0px -3px 5px var(--primary-color);
@@ -253,15 +252,12 @@ p{
     color:var(--white-color)
 }
 
-.userSection {
-    margin-top: 3rem; /* Adjust this value if necessary to ensure proper spacing below the navbar */
-}
 
 .userNavBar {
-    margin: 9rem 0 0 0; /* Increase the top margin to ensure it is below the navbar */
+    margin: 9rem 0 0 0;
     background-color: var(--primary-color);
     color: var(--white-color);
-    padding: 1rem 0; /* Add padding for better spacing */
+    padding: 1rem 0;
 }
 .userNavBar a {
     color: var(--white-color);
@@ -335,6 +331,10 @@ p{
 }
 
 /*sidebar*/
+.userSection {
+    margin-top: 3rem;
+}
+
 .sidebar{
     position: fixed;
     background-color: var(--tertiary-color);
@@ -353,6 +353,21 @@ p{
 }
 
 .restaurantSection {
+    margin-top: 10rem;
+    margin-left: 30rem;
+}
+
+.customer-reservationSection {
+    margin-top: 50px;
+}
+
+.reservation-card {
+    margin-bottom: 20px;
+    width: 50%;
+    margin-right: auto;
+}
+
+.restaurant-reservationSection {
     margin-top: 10rem;
     margin-left: 30rem;
 }

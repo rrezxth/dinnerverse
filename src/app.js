@@ -23,6 +23,7 @@ const Restaurant = require('./database/model/restaurantModel');
 const Menu = require('./database/model/menuModel');
 const Item = require('./database/model/itemModel');
 const Order = require('./database/model/orderModel');
+const Reservation = require('./database/model/reservationModel');
 
 // ==============================
 // MIDDLEWARES
@@ -190,6 +191,88 @@ app.get('/user/retrieve-orders/', isAuthenticated, async (req, res) => {
     }
 });
 
+// SHOW RESERVATIONS Page (for Customer use)
+app.get('/user/show-reservations-customer', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.user.role !== 'customer') {
+            return res.status(403).send({ error: 'Access denied' });
+        }
+
+        const reservations = await Reservation.find({ user_id: req.session.user.id })
+            .populate('restaurant_id', 'name')
+            .sort({ reservation_datetime: -1 })
+            .lean();
+
+        // Format the dates before rendering
+        reservations.forEach(reservation => {
+            reservation.reservation_datetime = new Date(reservation.reservation_datetime).toLocaleString('en-US', {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+            });
+        });
+
+        res.render('userCustomerReservation.hbs', { reservations });
+    } catch (error) {
+        console.error('Error retrieving customer reservations:', error);
+        throw error;
+    }
+});
+
+// SHOW RESERVATIONS Page (for Restaurant use)
+app.get('/user/show-reservations-restaurant', isAuthenticated, async (req, res) => {
+    try {
+        if (req.session.user.role !== 'restaurant') {
+            return res.status(403).send({ error: 'Access denied' });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Start of today
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 2); // End of tomorrow
+
+        const restaurant = await Restaurant.findOne({ account: req.session.user.id });
+        if (!restaurant) {
+            return res.status(400).send({ error: 'Restaurant data not found' });
+        }
+
+        const reservations = await Reservation.find({
+            restaurant_id: restaurant._id,
+            reservation_datetime: {
+                $gte: today,
+                $lt: tomorrow
+            }
+        })
+            .populate('user_id', 'name email')
+            .sort({ reservation_datetime: 1 })
+            .lean();
+
+        // Format the dates before rendering
+        reservations.forEach(reservation => {
+            reservation.reservation_datetime = new Date(reservation.reservation_datetime).toLocaleString('en-US', {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: true
+            });
+        });
+
+        res.render('userRestaurantReservation.hbs', { reservations });
+    } catch (error) {
+        console.error('Error retrieving restaurant reservations:', error);
+        throw error;
+    }
+});
+
+
+
 // SHOW RESTAURANT ITEMS Page
 app.get('/user/modify-items', isAuthenticated, async(req, res) => {
     try {
@@ -227,6 +310,7 @@ app.get('/select-restaurant', isAuthenticated, async(req, res) => {
 // ORDER Page
 app.get('/create-order', isAuthenticated,  async (req, res) => {
     const restaurantId = req.query.restaurantId;
+    req.session.user.restaurantId = restaurantId;
 
     try {
         // Fetch restaurant details
@@ -474,5 +558,33 @@ app.delete('/api/delete-item/:itemId', isAuthenticated, async (req, res) => {
     } catch (error) {
         console.error('Error deleting item:', error);
         res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Call route when user.customer is creating a new reservation
+app.post('/api/create-reservation', async (req, res) => {
+    try {
+        const restaurantId = req.session.user.restaurantId;
+        const userId = req.session.user.id;
+        const { date, time, number_of_guests } = req.body;
+
+        // Combine date and time into a single Date object
+        const reservation_datetime = new Date(`${date}T${time}:00`);
+
+        // Create the reservation
+        const newReservation = new Reservation({
+            restaurant_id: restaurantId,
+            user_id: userId,
+            reservation_datetime,
+            number_of_guests,
+        });
+
+        // Save the reservation
+        await newReservation.save();
+
+        res.status(200).json({ success: true, message: 'Reservation successfully saved.' });
+    } catch (error) {
+        console.error('Error creating reservation:', error);
+        res.status(500).json({ success: false, message: 'Error saving reservation.' });
     }
 });

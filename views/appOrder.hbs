@@ -1,10 +1,3 @@
-<!--
-NOTES:
-MAIN Order Webpage (/create-order)
--- This page will show all items from chosen restaurant. Data gathered from MongoDB.
--- User-Customer can add items to cart to order.
--->
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -21,37 +14,144 @@ MAIN Order Webpage (/create-order)
 </head>
 
 <body>
-    {{>navbar}}
-    <section class="container-fluid" style="padding-top: 80px;">
+{{>navbar}}
+<section class="container-fluid" style="padding-top: 80px;">
 
-        <div class="container">
-            <div class="row my-2">
-                {{#each items}}
-                    <div class="col-md-4 my-5">
-                        <div class="card ">
-                            <img style="height:210px" src="/image/restaurant_photos/{{../restaurant.alias}}/{{this.alias}}.jpg" class="img-fluid mb-2" alt="">
-                            <h4>{{this.name}}</h4>
-                            <h2 class="primary-color mb-3">
-                                <i class="fa fa-usd"></i>{{this.price}}</del></h2>
-                            <div>
-                                <button onclick="addFoodToBasket('{{this._id}}','{{this.name}}','{{this.price}}','/restaurant_photos/{{../restaurant.alias}}/{{this.alias}}.jpg' )" class="main-btn">Add To Cart</button>
-                            </div>
-                        </div>
-                    </div>
-                {{/each}}
+    <div class="container">
+        <!-- Reservation Button -->
+        <div class="row my-2">
+            <div class="col-12 text-center">
+                <button onclick="makeReservation('{{restaurant._id}}')" class="main-btn">Make a Reservation</button>
             </div>
         </div>
-    </section>
+
+        <!-- Menu Items -->
+        <div class="row my-2">
+            {{#each items}}
+                <div class="col-md-4 my-5">
+                    <div class="card ">
+                        <img style="height:210px" src="/image/restaurant_photos/{{../restaurant.alias}}/{{this.alias}}.jpg" class="img-fluid mb-2" alt="">
+                        <h4>{{this.name}}</h4>
+                        <h2 class="primary-color mb-3">
+                            <i class="fa fa-usd"></i>{{this.price}}</del></h2>
+                        <div>
+                            <button onclick="addFoodToBasket('{{this._id}}','{{this.name}}','{{this.price}}','/restaurant_photos/{{../restaurant.alias}}/{{this.alias}}.jpg' )" class="main-btn">Add To Cart</button>
+                        </div>
+                    </div>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        resetCart();
-    });
+    function makeReservation(restaurantId) {
+        const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
 
-    document.getElementById("orderNowButton").addEventListener("click", function() {
-        handleOrderNowButtonClick('{{user.id}}', '{{restaurant._id}}');
-    });
+        Swal.fire({
+            title: 'Make a Reservation',
+            html: `
+                <input type="date" id="reservation-date" class="swal2-input" value="${today}" min="${today}" placeholder="Select a date">
+                <select id="reservation-time" class="swal2-input">
+                    ${generateTimeOptions()}
+                </select>
+                <input type="number" id="number-of-guests" class="swal2-input" placeholder="Number of Guests" min="1" required>
+            `,
+            confirmButtonText: 'Reserve',
+            showCancelButton: true,
+            preConfirm: () => {
+                const date = document.getElementById('reservation-date').value;
+                const time = document.getElementById('reservation-time').value;
+                const guests = document.getElementById('number-of-guests').value;
+
+                if (!date || !time || !guests) {
+                    Swal.showValidationMessage('Please fill all fields');
+                    return false;
+                }
+                return { date, time, guests };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const { date, time, guests } = result.value;
+                saveReservation(restaurantId, date, time, guests);
+            }
+        });
+    }
+
+    function saveReservation(restaurantId, date, time, guests) {
+        const reservationData = {
+            restaurant_id: restaurantId,
+            date: date,
+            time: time,
+            number_of_guests: guests
+        };
+
+        fetch('/api/create-reservation', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(reservationData),
+        })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const formattedTime = formatTimeForDisplay(time);
+                        Swal.fire('Reservation Confirmed', `Your reservation for ${date} at ${formattedTime} for ${guests} guests has been saved.`, 'success');
+                    } else {
+                        Swal.fire('Reservation Failed', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    Swal.fire('Reservation Failed', 'There was an error saving your reservation. Please try again.', 'error');
+                });
+    }
+
+    function generateTimeOptions() {
+        const times = [];
+        let startHour = 12;  // 12 PM
+        let endHour = 21;    // 9 PM
+
+        for (let hour = startHour; hour < endHour; hour++) {
+            times.push(formatTime(hour, 0));
+            times.push(formatTime(hour, 30));
+        }
+        times.push(formatTime(endHour, 0)); // Add 9:00 PM
+
+        return times.map(time => `<option value="${time.value}">${time.display}</option>`).join('');
+    }
+
+    function formatTime(hour, minute) {
+        let displayHour = hour;
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+
+        if (hour > 12) {
+            displayHour = hour - 12;
+        } else if (hour === 0) {
+            displayHour = 12;
+        }
+
+        const formattedTime = `${displayHour}:${minute < 10 ? '0' : ''}${minute} ${ampm}`;
+        const valueTime = `${hour < 10 ? '0' : ''}${hour}:${minute < 10 ? '0' : ''}${minute}`;
+
+        return { value: valueTime, display: formattedTime };
+    }
+
+    function formatTimeForDisplay(time) {
+        const [hour, minute] = time.split(':').map(Number);
+        let displayHour = hour;
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+
+        if (hour > 12) {
+            displayHour = hour - 12;
+        } else if (hour === 0) {
+            displayHour = 12;
+        }
+
+        return `${displayHour}:${minute < 10 ? '0' : ''}${minute} ${ampm}`;
+    }
 </script>
+
 
 </body>
 

@@ -1,0 +1,45 @@
+<!--
+NOTES:
+USER RESTAURANT RESERVATION Webpage, (/user/show-reservations-restaurant)
+-- A webpage dedicated to showing all restaurant reservations (Today and Tomorrow ONLY)
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Reservations</title>
+</head>
+
+<body>
+{{> navbar}}
+<section>
+    <div class="container-fluid pb-5">
+        {{> adminbar}}
+        {{#if reservations}}
+            <div class="container restaurant-reservationSection">
+                <h2 class="mb-4">Today's and Tomorrow's Reservations</h2>
+                {{#each reservations}}
+                    <div class="card reservation-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Reservation Summary</h5>
+                            <p><strong>Customer Name:</strong> {{this.user_id.name}}</p>
+                            <p><strong>Number of Guests:</strong> {{this.number_of_guests}}</p>
+                            <p><strong>Date and Time:</strong> {{this.reservation_datetime}}</p>
+                        </div>
+                    </div>
+                {{/each}}
+            </div>
+        {{else}}
+            <div class="container mt-5 restaurant-reservationSection">
+                <h2 class="mb-4">No Reservations Found</h2>
+            </div>
+        {{/if}}
+    </div>
+</section>
+
+</body>
+
+</html>
