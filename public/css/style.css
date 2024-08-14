@@ -277,6 +277,23 @@ p{
 =================================
 =================================
  */
+.status-box {
+    display: inline-block;
+    padding: 10px 20px;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    background-color: var(--tertiary-color);
+    color: #007bff;
+    cursor: pointer;
+    text-align: center;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.status-box:hover {
+    background-color: #007bff;
+    color: #ffffff;
+}
 
 .logo img {
     width: 180px;
@@ -330,19 +347,8 @@ p{
     -webkit-transition: all .4s ease-out 0s;
 }
 
-/*sidebar*/
 .userSection {
     margin-top: 3rem;
-}
-
-.sidebar{
-    position: fixed;
-    background-color: var(--tertiary-color);
-    border:1px solid var(--tertiary-color);
-    color:var(--white-color);
-    height: 130vh;
-    width:23%;
-    padding-top:8rem;
 }
 
 .card .total-price {
@@ -362,11 +368,6 @@ p{
     letter-spacing: 1px;
 }
 
-.restaurantSection {
-    margin-top: 10rem;
-    margin-left: 30rem;
-}
-
 .customer-reservationSection {
     margin-top: 50px;
 }
@@ -377,29 +378,54 @@ p{
     margin-right: auto;
 }
 
-.restaurant-reservationSection {
-    margin-top: 10rem;
-    margin-left: 30rem;
-}
 
 .orderSection {
     margin-top: 50px;
 }
 
-.status-box {
-    display: inline-block;
-    padding: 10px 20px;
-    border: 1px solid #007bff;
-    border-radius: 4px;
-    background-color: var(--tertiary-color);
-    color: #007bff;
-    cursor: pointer;
-    text-align: center;
-    font-weight: bold;
-    text-decoration: none;
+table {
+    width: 100%;
+    table-layout: auto;
 }
 
-.status-box:hover {
-    background-color: #007bff;
-    color: #ffffff;
+/*
+Fixing ADMINBAR sidebar
+*/
+.sidebar {
+    position: fixed;
+    background-color: var(--tertiary-color);
+    border: 1px solid var(--tertiary-color);
+    color: var(--white-color);
+    height: 130vh;
+    width: 23%;
+    padding-top: 8rem;
+    transition: width 0.3s ease-in-out;
+}
+
+@media (max-width: 992px) {
+    .sidebar {
+        width: 15%;
+    }
+}
+
+.restaurantSection {
+    margin-top: 10rem;
+    margin-left: calc(23% + 2rem);
+    transition: margin-left 0.3s ease-in-out;
+    overflow: hidden;
+    width: auto;
+}
+
+@media (max-width: 992px) {
+    .restaurantSection {
+        margin-left: 1rem;
+    }
+}
+
+.restaurant-reservationSection {
+    margin-top: 10rem;
+    margin-left: calc(23% + 2rem);
+    transition: margin-left 0.3s ease-in-out;
+    overflow: hidden;
+    width: auto;
 }

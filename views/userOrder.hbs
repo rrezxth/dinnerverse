@@ -29,6 +29,7 @@ USER ORDERS Webpage, (/user/retrieve-order)
 
         {{#if orders}}
             <!-- Orders -->
+            <!-- Dynamic class -->
             <div class="container orderSection {{#if (eq user.role 'restaurant')}}restaurantSection{{/if}}">
                 <h2 class="mb-4">Your Orders</h2>
                 {{#each orders}}
@@ -53,6 +54,11 @@ USER ORDERS Webpage, (/user/retrieve-order)
 
                             <div class="table-responsive">
                                 <table class="table table-bordered">
+                                    <colgroup>
+                                        <col style="width: 15%;">
+                                        <col style="width: 5%;">
+                                        <col style="width: 5%;">
+                                    </colgroup>
                                     <thead>
                                     <tr>
                                         <th scope="col">Item Name</th>
@@ -71,6 +77,7 @@ USER ORDERS Webpage, (/user/retrieve-order)
                                     </tbody>
                                 </table>
                             </div>
+
                             <div class="total-price">
                                 <p><strong>Total Price:${{this.total_price}}</strong></p>
                             </div>
