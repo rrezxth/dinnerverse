@@ -2,6 +2,9 @@
 NOTES:
 -- Order must have:
 [user_id(type-User), restaurant_id, items(type-array), total_price, status, pickup_time]
+-- For items(type-array), we are using a hybrid approach so we get the benefits of referencing
+the item (if available) while also storing/saving information such as name and price
+if the item object itself gets deleted from the menu and database.
  */
 
 const mongoose = require('mongoose');
@@ -25,11 +28,15 @@ const orderSchema = new Schema({
                 ref: 'Item',
                 required: true,
             },
+            name: { // Store the current name
+                type: String,
+                required: true,
+            },
             quantity: {
                 type: Number,
                 required: true,
             },
-            price: {
+            price: { // Store the current price
                 type: Number,
                 required: true,
             }

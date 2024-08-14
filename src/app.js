@@ -137,14 +137,13 @@ app.get('/user/retrieve-orders/', isAuthenticated, async (req, res) => {
             // Fetch orders for customers
             orders = await Order.find({ user_id: req.session.user.id })
                 .populate('restaurant_id', 'name')
-                .populate('items.item_id', 'name')
+                .populate('items.item_id', 'name') // Still populate item_id if needed for additional details
                 .sort({ createdAt: -1 })
                 .lean();
 
             // Check if USER is restaurant
         } else if (req.session.user.role === 'restaurant') {
-
-            // Then, fetch orders for restaurants
+            // Fetch the restaurant based on user ID
             const restaurant = await Restaurant.findOne({ account: req.session.user.id });
             if (restaurant) {
                 orders = await Order.find({ restaurant_id: restaurant._id })
@@ -158,7 +157,6 @@ app.get('/user/retrieve-orders/', isAuthenticated, async (req, res) => {
         }
 
         // Format the dates before rendering
-        // *** Can be turned into function ***
         if (orders) {
             orders.forEach(order => {
                 order.pickup_time = new Date(order.pickup_time).toLocaleString('en-US', {
@@ -190,6 +188,7 @@ app.get('/user/retrieve-orders/', isAuthenticated, async (req, res) => {
         throw error;
     }
 });
+
 
 // SHOW RESERVATIONS Page (for Customer use)
 app.get('/user/show-reservations-customer', isAuthenticated, async (req, res) => {
