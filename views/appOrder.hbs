@@ -147,6 +147,19 @@
         return { value: valueTime, display: formattedTime };
     }
 
+    // Time formatter for saveReservation()
+    function formatTimeForDisplay(time) {
+        const [hour, minute] = time.split(':').map(Number);
+        let displayHour = hour;
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        if (hour > 12) {
+            displayHour = hour - 12;
+        } else if (hour === 0) {
+            displayHour = 12;
+        }
+        return `${displayHour}:${minute < 10 ? '0' : ''}${minute} ${ampm}`;
+    }
+
 </script>
 
 

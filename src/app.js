@@ -105,23 +105,23 @@ app.get('/clear-unauthorized-message', (req, res) => {
 app.get('/login', (req, res) => {
     const unauthorizedMessage = req.session.unauthorizedMessage;
     req.session.unauthorizedMessage = null; // Clear the message after fetching it
-    res.render('loginPage.hbs', { unauthorizedMessage });
+    res.render('loginPage', { unauthorizedMessage });
 });
 
 
 // LOGOUT Page
 app.get('/logout-success', (req, res) => {
-    res.render('logoutPage.hbs');
+    res.render('logoutPage');
 });
 
 // REGISTER Page
 app.get('/register', (req, res) => {
-    res.render('registerPage.hbs');
+    res.render('registerPage');
 });
 
 // USER PROFILE Page
 app.get('/user/profile', isAuthenticated, (req, res) => {
-    res.render('userProfile.hbs');
+    res.render('userProfile');
 });
 
 // USER RECENT ORDERS Page
@@ -300,8 +300,13 @@ app.get('/user/modify-items', isAuthenticated, async(req, res) => {
 
 // SELECT RESTAURANT Page
 app.get('/select-restaurant', isAuthenticated, async(req, res) => {
-    const restaurants = await Restaurant.find();
-    res.render('selectRestaurant', { restaurants });
+    try {
+        const restaurants = await Restaurant.find();
+        res.render('selectRestaurant', { restaurants });
+    } catch (error) {
+        console.error('Error fetching restaurants:', error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 // ORDER Page
@@ -330,12 +335,6 @@ app.get('/create-order', isAuthenticated,  async (req, res) => {
         console.error('Error loading order page:', err);
         res.status(500).send('Error loading order page');
     }
-});
-
-// 404 -- Page not found
-// Handle undefined webpages
-app.get('*', (req, res, next) => {
-    res.status(404).send('Sorry, the page you are looking for does not exist.');
 });
 
 // ==============================
@@ -593,4 +592,12 @@ app.post('/api/create-reservation', async (req, res) => {
         console.error('Error creating reservation:', error);
         res.status(500).json({ success: false, message: 'Error saving reservation.' });
     }
+});
+
+// ==============================
+// 404 -- Page not found
+// ==============================
+// Handle undefined webpages
+app.get('*', (req, res, next) => {
+    res.status(404).send('Sorry, the page you are looking for does not exist.');
 });
