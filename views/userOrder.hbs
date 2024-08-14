@@ -39,6 +39,7 @@ USER ORDERS Webpage, (/user/retrieve-order)
                         <div class="card-body">
                             <h5 class="card-title">Order Summary</h5>
 
+                            <!-- Dynamic page -->
                             {{#if (eq ../user.role 'customer')}}
                                 <p><strong>Status:</strong> {{this.status}}</p>
                             {{else if (eq ../user.role 'restaurant')}}
@@ -89,7 +90,10 @@ USER ORDERS Webpage, (/user/retrieve-order)
     </div>
 </section>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    // Status is clickable for user.restaurant
+    // Uses sweetalert2 to open an editable-dialog box
     document.addEventListener('DOMContentLoaded', () => {
         const statusLinks = document.querySelectorAll('.status-box');
 
@@ -112,137 +116,7 @@ USER ORDERS Webpage, (/user/retrieve-order)
                     showCancelButton: true,
                     confirmButtonText: 'Update Status',
                     showLoaderOnConfirm: true,
-                    preConfirm: (newStatus) => {
-                        return fetch(`/api/update-order-status/${orderId}`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ status: newStatus })
-                        })
-                                .then(response => {
-                                    if (!response.ok) {
-                                        throw new Error(response.statusText);
-                                    }
-                                    return response.json();
-                                })
-                                .catch(error => {
-                                    Swal.showValidationMessage(`Request failed: ${error}`);
-                                });
-                    },
-                    allowOutsideClick: () => !Swal.isLoading()
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Swal.fire({
-                            title: 'Status Updated!',
-                            text: `The order status has been updated.`,
-                            icon: 'success'
-                        }).then(() => {
-                            window.location.reload();
-                        });
-                    }
-                });
-            });
-        });
-    });
-</script>
-
-</body>
-
-</html>
-
-{{> navbar}}
-<section>
-    <div class="container-fluid pb-5">
-        <!-- Render different user bars based on role -->
-        {{#if (eq user.role 'customer')}}
-            {{> userbar}}
-        {{else if (eq user.role 'restaurant')}}
-            {{> adminbar}}
-        {{/if}}
-
-        {{#if orders}}
-            <!-- Orders -->
-            <div class="container orderSection {{#if (eq user.role 'restaurant')}}restaurantSection{{/if}}">
-                <h2 class="mb-4">Your Orders</h2>
-                {{#each orders}}
-                    <div class="card {{#unless @first}}mt-5{{/unless}} mb-3">
-                        <div class="card-header">
-                            <strong>Order ID:</strong> {{this._id}}
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title">Order Summary</h5>
-
-                            {{#if (eq ../user.role 'customer')}}
-                                <p><strong>Status:</strong> {{this.status}}</p>
-                            {{else if (eq ../user.role 'restaurant')}}
-                                <p><strong>Customer Name:</strong> {{this.user_id.name}}</p>
-                                <p><strong>Status:</strong>
-                                    <a href="#" class="status-box" data-order-id="{{this._id}}" data-current-status="{{this.status}}">
-                                        {{this.status}}
-                                    </a>
-                                </p>
-                            {{/if}}
-
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                    <thead>
-                                    <tr>
-                                        <th scope="col">Item Name</th>
-                                        <th scope="col">Quantity</th>
-                                        <th scope="col">Price</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {{#each this.items}}
-                                        <tr>
-                                            <td>{{this.item_id.name}}</td>
-                                            <td>{{this.quantity}}</td>
-                                            <td>${{this.price}}</td>
-                                        </tr>
-                                    {{/each}}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="card-footer text-muted">
-                            <small>Created At: {{this.createdAt}}</small>
-                        </div>
-                    </div>
-                {{/each}}
-            </div>
-        {{else}}
-            <div class="container mt-5 orderSection">
-                <h2 class="mb-4">No Order History</h2>
-            </div>
-        {{/if}}
-
-    </div>
-</section>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const statusLinks = document.querySelectorAll('.status-box');
-
-        statusLinks.forEach(link => {
-            link.addEventListener('click', (event) => {
-                event.preventDefault();
-                const orderId = event.target.getAttribute('data-order-id');
-                const currentStatus = event.target.getAttribute('data-current-status');
-
-                Swal.fire({
-                    title: 'Change Order Status',
-                    input: 'select',
-                    inputOptions: {
-                        'Preparing': 'Preparing',
-                        'Cancelled': 'Cancelled',
-                        'Ready for Pickup': 'Ready for Pickup',
-                        'Complete': 'Complete'
-                    },
-                    inputValue: currentStatus,
-                    showCancelButton: true,
-                    confirmButtonText: 'Update Status',
-                    showLoaderOnConfirm: true,
+                    // Calls the API
                     preConfirm: (newStatus) => {
                         return fetch(`/api/update-order-status/${orderId}`, {
                             method: 'POST',

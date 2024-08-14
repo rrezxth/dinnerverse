@@ -65,9 +65,12 @@ Modify Restaurant Items Webpage, (/modify-items)
     </div>
 </section>
 
-<!-- Include SweetAlert2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    // Uses sweetalert2 dialog box to change information
+    // Calls /edit-item API
+
+    // ediItem() to change item's price
     function editItem(itemId) {
         Swal.fire({
             title: 'Edit Item Price',
@@ -118,6 +121,7 @@ Modify Restaurant Items Webpage, (/modify-items)
         });
     }
 
+    // deleteItem() to delete items from menu
     function deleteItem(itemId) {
         Swal.fire({
             title: 'Are you sure?',

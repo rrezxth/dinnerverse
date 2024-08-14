@@ -125,7 +125,7 @@ USER PROFILE Webpage, (/user/profile)
 </section>
 
 <script>
-    // JavaScript code remains the same as in your original template
+    // Add basic buttons to allow edit/save for user.customer
     document.addEventListener('DOMContentLoaded', () => {
         const editButtons = document.querySelectorAll('.edit-btn');
 
@@ -146,6 +146,7 @@ USER PROFILE Webpage, (/user/profile)
             });
         });
 
+        // Save function calls the update-profile API
         const saveChanges = async (event) => {
             const field = event.target.getAttribute('data-field');
             const input = document.querySelector(`input[data-field="${field}"]`);
@@ -168,6 +169,7 @@ USER PROFILE Webpage, (/user/profile)
             }
         };
 
+        // Cancel changes function
         const cancelChanges = (event) => {
             const field = event.target.getAttribute('data-field');
             const input = document.querySelector(`input[data-field="${field}"]`);

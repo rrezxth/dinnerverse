@@ -1,3 +1,8 @@
+/*
+NOTES:
+-- Allows us to connect to MongoDB using the function: connectToMongo()
+ */
+
 require('dotenv').config({ path: '../../.env' });
 const mongoose = require('mongoose');
 const databaseUrl = process.env.DATABASE_URL;       // databaseUrl uses data from .env file in the root directory
