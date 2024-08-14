@@ -250,5 +250,5 @@ ___
 - number_of_guests: Number, required
 
 ___
-### Changelog
+## Changelog
 Version 1.0 [Initial Release Date]: Initial deployment of the application with core functionalities.
