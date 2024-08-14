@@ -81,7 +81,7 @@ ___
 - Rendered Template: userRestaurantReservation.hbs
 - Purpose: Displays today and tomorrow's reservations.
 
-### User-Restaurant Reservation Page
+### User-Restaurant Edit Items Page
 - Path: /user/modify-items
 - Method: GET
 - Auth Required: Yes
