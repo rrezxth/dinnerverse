@@ -10,11 +10,6 @@ const session = require('express-session');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 
-//const jwt = require('jsonwebtoken');
-//const jwtSecret = process.env.JWT_SECRET;
-//const cookieParser = require('cookie-parser');
-
-
 //// IMPORT from directory  
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 const {connectToMongo} = require("./database/dbconfig");
@@ -134,7 +129,7 @@ app.get('/user/retrieve-orders/', isAuthenticated, async (req, res) => {
     try {
         let orders;
 
-        // Check if USER is customer
+        // Check if USER is 'customer'
         if (req.session.user.role === 'customer') {
             // Fetch orders for customers
             orders = await Order.find({ user_id: req.session.user.id })
@@ -143,7 +138,7 @@ app.get('/user/retrieve-orders/', isAuthenticated, async (req, res) => {
                 .sort({ createdAt: -1 })
                 .lean();
 
-            // Check if USER is restaurant
+        // CHeck if USER is 'restaurant'
         } else if (req.session.user.role === 'restaurant') {
             // Fetch the restaurant based on user ID
             const restaurant = await Restaurant.findOne({ account: req.session.user.id });
@@ -199,6 +194,7 @@ app.get('/user/show-reservations-customer', isAuthenticated, async (req, res) =>
             return res.status(403).send({ error: 'Access denied' });
         }
 
+        // Fetch reservations based on userId
         const reservations = await Reservation.find({ user_id: req.session.user.id })
             .populate('restaurant_id', 'name')
             .sort({ reservation_datetime: -1 })
@@ -231,6 +227,7 @@ app.get('/user/show-reservations-restaurant', isAuthenticated, async (req, res) 
             return res.status(403).send({ error: 'Access denied' });
         }
 
+        // Get today and tomorrow's date
         const today = new Date();
         today.setHours(0, 0, 0, 0); // Start of today
         const tomorrow = new Date(today);
@@ -241,6 +238,8 @@ app.get('/user/show-reservations-restaurant', isAuthenticated, async (req, res) 
             return res.status(400).send({ error: 'Restaurant data not found' });
         }
 
+        // Fetch reservations based on restaurantId and date
+        // User.customer name and phoneNumber also saved to reservations object
         const reservations = await Reservation.find({
             restaurant_id: restaurant._id,
             reservation_datetime: {
@@ -278,21 +277,20 @@ app.get('/user/modify-items', isAuthenticated, async(req, res) => {
         // Get the restaurant ID from the session
         const restaurantId = req.session.user.restaurantId;
 
-        // Fetch the restaurant details
+        // Fetch the restaurant details by id
         const restaurant = await Restaurant.findById(restaurantId);
         if (!restaurant) {
             console.error('Restaurant not found');
             return res.status(404).send('Restaurant not found');
         }
 
-        // Fetch the items from MENU collections
+        // Fetch the items from MENU collections filter by restaurantId
         const menu = await Menu.findOne({ restaurant_id: restaurantId }).populate('items');
         if (!menu) {
             console.error('Menu not found for restaurantId:', restaurantId);
             return res.status(404).send('Menu not found');
         }
 
-        // Sending restaurant and items info
         res.render('restaurantItems', { restaurant, items: menu.items });
     } catch (err) {
         console.error('Error loading modify items page:', err);
@@ -312,14 +310,14 @@ app.get('/create-order', isAuthenticated,  async (req, res) => {
     req.session.user.restaurantId = restaurantId;
 
     try {
-        // Fetch restaurant details
+        // Fetch restaurant details by restaurantId
         const restaurant = await Restaurant.findById(restaurantId);
         if (!restaurant) {
             console.error('Restaurant not found');
             return res.status(404).send('Restaurant not found');
         }
 
-        // Fetch menu from restaurantId
+        // Fetch menu by restaurantId
         const objectId = new mongoose.Types.ObjectId(restaurantId);
         const menu = await Menu.findOne({ restaurant_id: objectId }).populate('items');
         if (!menu) {
@@ -327,7 +325,6 @@ app.get('/create-order', isAuthenticated,  async (req, res) => {
             return res.status(404).send('Menu not found');
         }
 
-        // Render order page with the selected restaurant and menu items
         res.render('appOrder', { restaurant, items: menu.items });
     } catch (err) {
         console.error('Error loading order page:', err);
@@ -336,6 +333,7 @@ app.get('/create-order', isAuthenticated,  async (req, res) => {
 });
 
 // 404 -- Page not found
+// Handle undefined webpages
 app.get('*', (req, res, next) => {
     res.status(404).send('Sorry, the page you are looking for does not exist.');
 });
@@ -359,13 +357,14 @@ app.post('/login', async (req, res) => {
             }
         }
 
+        // Check if user credentials (password) matches
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).send({ error: 'Invalid credentials' });
         }
 
+        // *** Can be turned into function ***
         // Initialize session data for future use
-        // *** Can be turned into function? ***
         const sessionData = {
             id: user._id,
             email: user.email.toLowerCase(),
@@ -413,7 +412,9 @@ app.post('/api/register', async(req, res) => {
     try {
 
         // *** Can be turned into function? ***
+        // Hash the password before saving
         const hashedPassword = await bcrypt.hash(password, 10);
+        // Save new user into a variable -- to be saved
         const newUser = new User({
             email: email.toLowerCase(),
             username: email.toLowerCase(),
@@ -435,26 +436,19 @@ app.post('/api/register', async(req, res) => {
     }
 });
 
-// *** UNUSED? ***
-app.get('/api/available-restaurants', isAuthenticated, async (req, res) => {
-    try {
-        const restaurants = await Restaurant.find();
-        res.json(restaurants);
-    } catch (err) {
-        res.status(500).json({ message: 'Error fetching restaurants', error: err });
-    }
-});
-
 // Call route when ORDER NOW is clicked
 app.post('/api/submit-order', isAuthenticated, async (req, res) => {
     try {
 
+        // Get info from req.body
         const { user_id, restaurant_id, items, total_price, pickup_time } = req.body;
 
+        // All fields must be filled
         if (!user_id || !restaurant_id || !items || !total_price || !pickup_time) {
             return res.status(400).json({ error: 'All fields are required' });
         }
 
+        // Save new order into a variable -- to be saved
         const newOrder = new Order({
             user_id,
             restaurant_id,
@@ -478,14 +472,16 @@ app.post('/api/submit-order', isAuthenticated, async (req, res) => {
 // Works for singular or multiple field modifications
 app.post('/api/update-profile', isAuthenticated, async (req, res) => {
     try {
+        // Get info
         const userId = req.session.user.id;
         const { field, value } = req.body;
 
+        // Info must be valid
         if (!userId || !field || value === undefined) {
             return res.status(400).json({ success: false, message: 'Invalid input' });
         }
 
-        // Works on any field
+        // Works on any field -- name, phoneNumber, address, etc
         const update = { [field]: value };
         const user = await User.findByIdAndUpdate(userId, update, { new: true });
 
@@ -504,10 +500,12 @@ app.post('/api/update-profile', isAuthenticated, async (req, res) => {
 
 // Call route when user.restaurant changes [Status] of :orderId
 app.post('/api/update-order-status/:orderId', isAuthenticated, async (req, res) => {
+    // Get info
     const { orderId } = req.params;
     const { status } = req.body;
 
     try {
+        // Fetch order details by orderId
         const order = await Order.findById(orderId);
         if (!order) {
             return res.status(404).json({ error: 'Order not found' });
@@ -526,10 +524,12 @@ app.post('/api/update-order-status/:orderId', isAuthenticated, async (req, res) 
 
 // Call route when user.restaurant edits their dish price
 app.post('/api/edit-item/:itemId', isAuthenticated, async (req, res) => {
+    // Get info
     const { itemId } = req.params;
     const { price } = req.body;
 
     try {
+        // Fetch item details by itemId
         const item = await Item.findById(itemId);
         if (!item) {
             return res.status(404).json({ error: 'Item not found' });
@@ -548,6 +548,7 @@ app.post('/api/edit-item/:itemId', isAuthenticated, async (req, res) => {
 
 // Call route when user.restaurant deletes one of their item/dish
 app.delete('/api/delete-item/:itemId', isAuthenticated, async (req, res) => {
+    // Get info
     const { itemId } = req.params;
 
     try {
@@ -568,6 +569,7 @@ app.delete('/api/delete-item/:itemId', isAuthenticated, async (req, res) => {
 // Call route when user.customer is creating a new reservation
 app.post('/api/create-reservation', async (req, res) => {
     try {
+        // Save info to some variables
         const restaurantId = req.session.user.restaurantId;
         const userId = req.session.user.id;
         const { date, time, number_of_guests } = req.body;
