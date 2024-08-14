@@ -1,3 +1,4 @@
+// Reset 'cart' data
 function resetCart() {
     localStorage.setItem("cart", JSON.stringify([]));
     updateCart();
@@ -35,7 +36,9 @@ function addFoodToBasket(did, dname, dprice, dimage) {
     }
 
     localStorage.setItem("cart", JSON.stringify(products));
+    // Call sweetalert2
     displayNotification("Item added successfully.");
+    // Update cart to reload with new data
     updateCart();
 }
 
