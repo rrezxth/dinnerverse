@@ -9,7 +9,7 @@ reservations and manually edit their dish information from the menu.
 MongoDB for data persistence and Handlebars for templating. User Authentication is handled 
 by using bcrypt.
 ___
-## *Routes*
+## *Route Documentation*
 ### Home Page
 
 - Path: /
@@ -90,7 +90,7 @@ ___
 - Purpose 1: Displays current restaurant menu items.
 - Purpose 2: Allows restaurants to change the price of their items.
 ___
-## *APIs*
+## *API Documentation*
 ### Login API
 - Endpoint: /api/login
 - Method: POST
@@ -200,11 +200,25 @@ ___
 - - Success: { success: true, message: 'Reservation successfully saved.' } (200 OK)
 - - Failure: { success: false, message: 'Error saving reservation.' } (500 Internal Server Error)
 - Purpose: Allows users customer to create a new reservation for a specific restaurant and date.
+___
+## *Model Documentation*
+### User Model
+- email: String, required, unique
+- password: String, required
+- name: String, required
+- address: String, required
+- phoneNUmber: String, required, 
+- username: String, required, [restaurants-only]
+- role: String, required, [can only be 'customer' or 'restaurant']
 
+### Restaurant Model
+- account: ObjectId, a reference to 'User' schema, represents account linked to restaurant
+- address: String, required
+- name: String, required
+- phoneNUmber: String, required,
+- alias: String, required, [an alternative name of the restaurant]
 
-
-
-
+### Menu Model
 ___
 ### Changelog
 Version 1.0 [Initial Release Date]: Initial deployment of the application with core functionalities.
