@@ -45,6 +45,17 @@
 </section>
 
 <script>
+    // Reset cart when page loads
+    document.addEventListener("DOMContentLoaded", function() {
+        resetCart();
+    });
+
+    // Handle the orderNow button on modal
+    document.getElementById("orderNowButton").addEventListener("click", function() {
+        handleOrderNowButtonClick('{{user.id}}', '{{restaurant._id}}');
+    });
+
+    // Call sweetalert2 modal
     function makeReservation(restaurantId) {
         const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
 
@@ -78,6 +89,7 @@
         });
     }
 
+    // Call post route /create-reservation API to save reservation
     function saveReservation(restaurantId, date, time, guests) {
         const reservationData = {
             restaurant_id: restaurantId,
@@ -107,6 +119,8 @@
                 });
     }
 
+    // Static time options for reservations
+    // Change to suit restaurant's needs
     function generateTimeOptions() {
         const times = [];
         let startHour = 12;  // 12 PM
@@ -121,6 +135,7 @@
         return times.map(time => `<option value="${time.value}">${time.display}</option>`).join('');
     }
 
+    // Time formatter to show AM/PM instead of military time
     function formatTime(hour, minute) {
         let displayHour = hour;
         const ampm = hour >= 12 ? 'PM' : 'AM';
@@ -137,19 +152,6 @@
         return { value: valueTime, display: formattedTime };
     }
 
-    function formatTimeForDisplay(time) {
-        const [hour, minute] = time.split(':').map(Number);
-        let displayHour = hour;
-        const ampm = hour >= 12 ? 'PM' : 'AM';
-
-        if (hour > 12) {
-            displayHour = hour - 12;
-        } else if (hour === 0) {
-            displayHour = 12;
-        }
-
-        return `${displayHour}:${minute < 10 ? '0' : ''}${minute} ${ampm}`;
-    }
 </script>
 
 

@@ -110,21 +110,26 @@ function removeBook(id) {
 /*
 =================================
 =================================
- */
+*/
 
-// Pressing OrderNow on the modal calls this function
 async function handleOrderNowButtonClick(user_id, restaurant_id) {
     // Close the modal
     var modalElement = document.getElementById("staticBackdrop");
     var modalInstance = bootstrap.Modal.getInstance(modalElement);
     modalInstance.hide();
 
+    // Get cart data
+    const cart = JSON.parse(localStorage.getItem("cart"));
+    if (!cart || cart.length === 0) {
+        Swal.fire('Cart is empty', 'Please add items to the cart before ordering.', 'error');
+        return;
+    }
+
     // Pickup time (40 minutes from now)
     const currentTime = new Date();
     const pickup_time = new Date(currentTime.getTime() + 40 * 60000);
 
-    // Get cart data
-    const cart = JSON.parse(localStorage.getItem("cart"));
+    // Calculate total price
     const total_price = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
     // Prepare order data
@@ -133,6 +138,7 @@ async function handleOrderNowButtonClick(user_id, restaurant_id) {
         restaurant_id,
         items: cart.map(item => ({
             item_id: item.id,
+            name: item.name,
             quantity: item.quantity,
             price: item.price
         })),
@@ -156,7 +162,7 @@ async function handleOrderNowButtonClick(user_id, restaurant_id) {
 
             resetCart();
 
-            // Show notif
+            // Show notification
             Swal.fire({
                 icon: "success",
                 title: "Order has been placed.",
@@ -166,8 +172,10 @@ async function handleOrderNowButtonClick(user_id, restaurant_id) {
             });
         } else {
             console.error('Failed to create order');
+            Swal.fire('Order Failed', 'There was a problem creating your order. Please try again.', 'error');
         }
     } catch (error) {
         console.error('Error:', error);
+        Swal.fire('Order Failed', 'There was an error processing your order. Please try again.', 'error');
     }
 }
