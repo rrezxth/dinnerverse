@@ -343,7 +343,7 @@ app.get('*', (req, res, next) => {
 // ==============================
 
 // Call route to validate login credentials
-app.post('/login', async (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { identifier, password } = req.body;
     try {
         // Find user.custoer first with their EMAIL

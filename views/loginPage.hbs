@@ -25,7 +25,7 @@ LOGIN Webpage, (/login)
                         <div class="text-center">
                             <h2 class="primary-color">User Login</h2>
                         </div>
-                        <form id="login-form" class="form" action="/login" method="post">
+                        <form id="login-form" class="form" action="/api/login" method="post">
                             <div class="mx-2">
                                 <input type="text" class="form-control mt-3" name="identifier" placeholder="Enter email / username" required>
                                 <input type="password" class="form-control mt-3" name="password" placeholder="Enter password" required>
@@ -53,7 +53,7 @@ LOGIN Webpage, (/login)
             const data = Object.fromEntries(formData.entries());
 
             try {
-                const response = await fetch('/login', {
+                const response = await fetch('/api/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
