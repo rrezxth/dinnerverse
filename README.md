@@ -219,6 +219,36 @@ ___
 - alias: String, required, [an alternative name of the restaurant]
 
 ### Menu Model
+- restaurant_id: ObjectId, a reference to 'Restaurant' schema, represents the menu's link to the restaurant
+- items: Array, required, [an array of dish items]
+- name: String, required
+
+### Item Model
+- menu_id: ObjectId, a reference to the 'Menu' schema, represents the item's link to the menu
+- description: String, required
+- name: String, required
+- price: Number, required
+- alias: String, required, [an alternative name of the item]
+- photo: String, optional [currently unused]
+
+### Order Model
+- user_id: ObjectId, a reference to 'User' schema, represents the order's link to user
+- restaurant_id: ObjectId, a reference to 'Restaurant' schema, represents the order's link to restaurant
+- items: Array, required
+- - item_id: ObjectId, a reference to 'Item' schema
+- - name: String, required
+- - quantity: Number, required
+- - price: Number, required
+- total_price: Number, required
+- status: String, required
+- pickup_time: Date, required
+
+### Reservation Model
+- user_id: ObjectId, a reference to 'User' schema, represents the reservation's link to user
+- restaurant_id: ObjectId, a reference to 'Restaurant' schema, represents the reservation's link to restaurant
+- reservation_datetime: Date, required
+- number_of_guests: Number, required
+
 ___
 ### Changelog
 Version 1.0 [Initial Release Date]: Initial deployment of the application with core functionalities.
