@@ -248,7 +248,7 @@ app.get('/user/show-reservations-restaurant', isAuthenticated, async (req, res) 
                 $lt: tomorrow
             }
         })
-            .populate('user_id', 'name email')
+            .populate('user_id', 'name phoneNumber')
             .sort({ reservation_datetime: 1 })
             .lean();
 
@@ -271,8 +271,6 @@ app.get('/user/show-reservations-restaurant', isAuthenticated, async (req, res) 
         throw error;
     }
 });
-
-
 
 // SHOW RESTAURANT ITEMS Page
 app.get('/user/modify-items', isAuthenticated, async(req, res) => {
