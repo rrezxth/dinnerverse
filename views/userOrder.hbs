@@ -42,6 +42,7 @@ USER ORDERS Webpage, (/user/retrieve-order)
 
                             <!-- Dynamic page -->
                             {{#if (eq ../user.role 'customer')}}
+                                <p><strong>Restaurant:</strong> {{this.restaurant_id.name}}</p>
                                 <p><strong>Status:</strong> {{this.status}}</p>
                             {{else if (eq ../user.role 'restaurant')}}
                                 <div class="d-flex justify-content-between">
@@ -82,7 +83,7 @@ USER ORDERS Webpage, (/user/retrieve-order)
                             </div>
 
                             <div class="total-price">
-                                <p><strong>Total Price:${{this.total_price}}</strong></p>
+                                <p><strong>Total Price:${{this.total_price}} (w/ tax)</strong></p>
                             </div>
                         </div>
                         <div class="card-footer text-muted">

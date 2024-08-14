@@ -30,6 +30,11 @@ SELECT RESTAURANT Webpage, (/select-restaurant)
             {{/each}}
         </div>
     </div>
-
+<script>
+    // Reset cart when page loads
+    document.addEventListener("DOMContentLoaded", function() {
+        resetCart();
+    });
+</script>
 </body>
 </html>

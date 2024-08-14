@@ -45,11 +45,6 @@
 </section>
 
 <script>
-    // Reset cart when page loads
-    document.addEventListener("DOMContentLoaded", function() {
-        resetCart();
-    });
-
     // Handle the orderNow button on modal
     document.getElementById("orderNowButton").addEventListener("click", function() {
         handleOrderNowButtonClick('{{user.id}}', '{{restaurant._id}}');

@@ -76,6 +76,8 @@ function updateCart() {
         `;
 
         let totalPrice = 0;
+        const taxRate = 0.13;
+        let taxPrice = 0;
         cart.forEach((item) => {
             table += `
                 <tr>
@@ -88,11 +90,16 @@ function updateCart() {
                 </tr>
             `;
             totalPrice += item.price * item.quantity;
+            // 5 Cents denomination
+            //totalPrice = Math.round(totalPrice * 20) / 20;
+            taxPrice = Math.round(totalPrice * taxRate * 100) / 100;
+            taxPrice = taxPrice.toFixed(2);
+
         });
 
         table += `
             <tr>
-                <td colspan='3' class='my-2 '>Total Price: ${totalPrice}</td>
+                <td colspan="6" class="my-2">Total Price: $${totalPrice} (+ $${taxPrice} tax)</td>
             </tr>
             </table>
         `;
@@ -129,9 +136,11 @@ async function handleOrderNowButtonClick(user_id, restaurant_id) {
     const currentTime = new Date();
     const pickup_time = new Date(currentTime.getTime() + 40 * 60000);
 
-    // Calculate total price
-    const total_price = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    // Tax rate
+    const tax_rate = 1.13;
 
+    // Calculate total price w/ tax
+    const total_price = Math.round(cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) * tax_rate * 100) / 100;
     // Prepare order data
     const orderData = {
         user_id,
