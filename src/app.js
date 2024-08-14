@@ -38,6 +38,7 @@ app.use(session({
     cookie: { secure: false }
 }));
 
+// Handlebars engine
 app.engine(".hbs", exphbs.engine({
     extname: ".hbs",
     defaultLayout: false,
@@ -98,6 +99,7 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
+// User unauthorized 'page'
 app.get('/clear-unauthorized-message', (req, res) => {
     req.session.unauthorizedMessage = null;
     res.sendStatus(200);
@@ -335,6 +337,11 @@ app.get('/create-order', isAuthenticated,  async (req, res) => {
     }
 });
 
+// 404 -- Page not found
+app.get('*', (req, res, next) => {
+    res.status(404).send('Sorry, the page you are looking for does not exist.');
+});
+
 // ==============================
 // API CALLS
 // ==============================
@@ -443,24 +450,23 @@ app.get('/api/available-restaurants', isAuthenticated, async (req, res) => {
 // Call route when ORDER NOW is clicked
 app.post('/api/submit-order', isAuthenticated, async (req, res) => {
     try {
-        // Save all information from the modal window
+
         const { user_id, restaurant_id, items, total_price, pickup_time } = req.body;
 
         if (!user_id || !restaurant_id || !items || !total_price || !pickup_time) {
             return res.status(400).json({ error: 'All fields are required' });
         }
 
-        // *** Can be turned into a function? ***
         const newOrder = new Order({
             user_id,
             restaurant_id,
             items,
             total_price,
             pickup_time,
-            status: 'Preparing' // Default
+            status: 'Preparing'
         });
 
-        // Save new order into the MongoDB
+        // Save new order
         await newOrder.save();
 
         res.status(201).json({ message: 'Order created successfully', order: newOrder });
@@ -468,6 +474,7 @@ app.post('/api/submit-order', isAuthenticated, async (req, res) => {
         res.status(500).json({ error: 'Failed to create order' });
     }
 });
+
 
 // Call when user.customer profile is updated
 // Works for singular or multiple field modifications
