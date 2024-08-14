@@ -1,11 +1,11 @@
 # Welcome to Dinnerverse!
 
 ___
-**Description:** This web application allows users to create pick-up orders,
+**DESCRIPTION:** This web application allows users to create pick-up orders,
 manage reservations at various restaurants. It supports restaurants ability to view orders, 
 reservations and manually edit their dish information from the menu.
 
-**Technology:** This project utilizes Node.js with Express for server-side logic, 
+**TECHNOLOGY:** This project utilizes Node.js with Express for server-side logic, Bootstrap for the UI Framework,
 MongoDB for data persistence and Handlebars for templating. User Authentication is handled 
 by using bcrypt.
 ___
@@ -65,7 +65,8 @@ ___
 - Method: GET
 - Auth Required: Yes
 - Rendered Template: userOrder.hbs
-- Purpose: Displays past and current customer orders.
+- Purpose 1: Displays past and current customer orders.
+- Purpose 2: Allows restaurants to change status of customers' orders.
 
 ### User-Customer Reservation Page
 - Path: /user/show-reservations-customer
@@ -87,7 +88,7 @@ ___
 - Auth Required: Yes
 - Rendered Template: restaurantItems.hbs
 - Purpose 1: Displays current restaurant menu items.
-
+- Purpose 2: Allows restaurants to change the price of their items.
 ___
 ## *APIs*
 ### Home Page
