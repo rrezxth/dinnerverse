@@ -44,9 +44,11 @@ This partial must be used to show the navigation bar for easy access.
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="/">Home</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/select-restaurant">ORDER NOW!</a>
-                </li>
+                {{#if (eq user.role 'customer')}}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/select-restaurant">ORDER NOW!</a>
+                    </li>
+                {{/if}}
 
                 {{#if user}}
                     <li class="nav-item dropdown">
@@ -75,11 +77,12 @@ This partial must be used to show the navigation bar for easy access.
                     </li>
                 {{/if}}
 
-
-                <li class="nav-item">
-                    <a class="nav-link " data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i
-                            class="fas fa-shopping-basket ps-3"></i><small class="cart-num"></small></a>
-                </li>
+                {{#if (eq user.role 'customer')}}
+                    <li class="nav-item">
+                        <a class="nav-link " data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i
+                                class="fas fa-shopping-basket ps-3"></i><small class="cart-num"></small></a>
+                    </li>
+                {{/if}}
             </ul>
         </div>
     </div>
