@@ -65,10 +65,32 @@ ___
 - Method: GET
 - Auth Required: Yes
 - Rendered Template: userOrder.hbs
-- Purpose 1:
-- Purpose 2: 
+- Purpose: Displays past and current customer orders.
 
+### User-Customer Reservation Page
+- Path: /user/show-reservations-customer
+- Method: GET
+- Auth Required: Yes
+- Rendered Template: userCustomerReservation.hbs
+- Purpose: Displays past and current customer reservations.
 
+### User-Restaurant Reservation Page
+- Path: /user/show-reservations-restaurant
+- Method: GET
+- Auth Required: Yes
+- Rendered Template: userRestaurantReservation.hbs
+- Purpose: Displays today and tomorrow's reservations.
+
+### User-Restaurant Reservation Page
+- Path: /user/modify-items
+- Method: GET
+- Auth Required: Yes
+- Rendered Template: restaurantItems.hbs
+- Purpose 1: Displays current restaurant menu items.
+
+___
+## *APIs*
+### Home Page
 
 
 
