@@ -1,6 +1,10 @@
 # Welcome to Dinnerverse!
 
 ___
+**INSTALLATION:** npm install 
+
+**RUNNING THE PROGRAM:** npm start
+
 **DESCRIPTION:** This web application allows users to create pick-up orders,
 manage reservations at various restaurants. It supports restaurants ability to view orders, 
 reservations and manually edit their dish information from the menu.
